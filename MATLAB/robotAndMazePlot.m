@@ -1,4 +1,4 @@
-savePlotData = true;
+savePlotData = false;
 figDirectory = '../Latex/Figures/';
 figScreenPosition = [5 5 15 9];
 
@@ -78,3 +78,14 @@ set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
 if savePlotData == true
     print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'Trajectory'))
 end
+
+figure(5)
+pp = plot(solution.phase(1).time,solution.phase(1).state(:,5),'-o');
+xl = xlabel('$t$','Interpreter','LaTeX');
+yl = ylabel('$\omega(t)$','Interpreter','LaTeX');
+set(pp,'LineWidth',1.25,'MarkerSize',8);
+set(xl,'FontSize',18);
+set(yl,'FontSize',18);
+set(ll,'FontSize',18,'Interpreter','LaTeX');
+set(gca,'FontSize',16,'FontName','Times');
+grid on

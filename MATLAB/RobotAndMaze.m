@@ -8,7 +8,8 @@ func = @f;
 tspan = [0 tf];
 [t, x_Ode] = ode45(func, tspan, initialConditions, systemVars.odeOpts);
 
-func_new = @f_new;
+% func_new = @f_new;
+func_new = @robotAndMazeContinuousWrapper;
 [t_new, x_Ode_new] = ode45(func_new, tspan, zeros(5, 1), systemVars.odeOpts);
 
 figure
@@ -129,4 +130,18 @@ function xDot = f_new(~, x)
     xDot(3) = x(1)*cos(x(2));
     xDot(4) = x(1)*sin(x(2));
     xDot(5) = (1/Izz)*w*(u1-u2);
+end
+
+function xDot = robotAndMazeContinuousWrapper(~, x)
+    input.auxdata.m = 5.925;    % Robot mass
+    rRobot = 0.336/2;           % Robot diameter             
+    input.auxdata.I = 0.5*input.auxdata.m*(rRobot^2);   % Robot z axis inertia
+    input.auxdata.w = 0.13;     % Distance from the wheels to robot CoG
+
+    input.phase.state = x';
+    input.phase.control(:,1) = 1.1;
+    input.phase.control(:,2) = 1;
+
+    phaseout = robotAndMazeContinuous(input);
+    xDot = phaseout.dynamics';
 end

@@ -19,7 +19,7 @@ auxdata.w = 0.13;                   % Distance from the wheels to robot CoG
 t0 = 0;                                         % initial time
 tfmin = 0; tfmax = 20;                          % time boundary
 v0 = 0; theta0 = 0; x0 = 0; y0 = 0; omega0 = 0; % initial state
-thetatf = 0; xf = 20; yf = 0;                  % final state
+thetatf = 0; xf = 20; yf = 10;                  % final state
 % vmin = -16.5; vmax = 16.5;
 vmin = 0; vmax = 16.5;
 thetamin = -2*pi; thetamax = 2*pi;
