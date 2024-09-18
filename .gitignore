@@ -1,0 +1,11 @@
+Latex/Figures/**
+Latex/RobotAndMaze.log
+Latex/RobotAndMaze.aux
+Latex/RobotAndMaze.out
+Latex/RobotAndMaze.pdf
+Latex/RobotAndMaze.synctex.gz
+MATLAB/RobotAndMaze-Problem*
+MATLAB/RobotAndMazeContinuousAD*
+MATLAB/RobotAndMazeEndpointAD*
+*.asv
+*.mat
