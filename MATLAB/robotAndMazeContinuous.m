@@ -21,6 +21,12 @@ yDot              = v.*sin(theta);
 omegaDot          = (1/I)*w*(Fr-Fl);
 phaseout.dynamics = [vDot, thetaDot, xDot, yDot, omegaDot];
 
+if input.auxdata.pathConstraintsActive
+    [xLeft, xRight, yBottom, yTop] = calcCollisionDistances(...
+        x, y, input.auxdata.xColMatrix, input.auxdata.yColMatrix);
+    phaseout.phase = [xLeft, xRight, yBottom, yTop];
+end
+
 %---------------------------------------------%
 % END: function brachistochroneContinuous.m   %
 %---------------------------------------------%

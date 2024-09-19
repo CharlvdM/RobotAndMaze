@@ -8,6 +8,23 @@
 
 clear all; close all; clc
 
+FIRST_SIM = 1;
+BASIC_MAZE = 2;
+
+sim = FIRST_SIM;
+
+auxdata.pathConstraintsActive = true;
+
+% Maze x-collision matrix
+xColMatrix =   [1   0   1   0
+                1   1   0   1
+                1   0   0   0];
+yColMatrix =   [1   1   1   1
+                1   0   0   0
+                0   1   1   0];
+auxdata.xColMatrix = xColMatrix;
+auxdata.yColMatrix = yColMatrix;
+
 % This first iteration simply attempts to get the robot to the specified
 % final location and orientation, without any maze/track contraints.
 
@@ -16,15 +33,15 @@ rRobot = 0.336/2;                   % Robot diameter
 auxdata.I = 0.5*auxdata.m*(rRobot^2);   % Robot z axis inertia
 auxdata.w = 0.13;                   % Distance from the wheels to robot CoG
 
-t0 = 0;                                         % initial time
-tfmin = 0; tfmax = 20;                          % time boundary
-v0 = 0; theta0 = 0; x0 = 0; y0 = 0; omega0 = 0; % initial state
-thetatf = 0; xf = 20; yf = 10;                  % final state
+t0 = 0;                                             % initial time
+tfmin = 0; tfmax = 20;                              % time boundary
+v0 = 0; theta0 = 0; x0 = 0.5; y0 = 0.5; omega0 = 0; % initial state
+thetatf = 0; xf = 2.5; yf = 1.5;                    % final state
 % vmin = -16.5; vmax = 16.5;
 vmin = 0; vmax = 16.5;
 thetamin = -2*pi; thetamax = 2*pi;
-xmin = -10; xmax = 25;
-ymin = -10; ymax = 20;
+xmin = 0; xmax = 4;
+ymin = 0; ymax = 3;
 omegamin = -10; omegamax = 10; % Angular rate (rad/s) limit
 
 % motorMaxTorue = 20;

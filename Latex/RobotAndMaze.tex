@@ -143,14 +143,17 @@ The model parameters values are given in Table \ref{tab:Model}.
 	\label{tab:Model}
 \end{table}
 
+\iffalse
 \section{Model Validation}
 
 To test the model, a simulation is run with constant forces, with the right force set higher than the left force. The longitudinal velocity should increase at a constant acceleration, and the robot is expected to run in circles.
 
 Please see the GitHub repository, {\color{blue} \href{https://github.com/CharlvdM/RobotAndMaze}{RobotAndMaze}}, I have created containing the MATLAB and Latex code.
-
+\fi
 
 \section{First GPOPS-II Simulation}
+
+Please see the GitHub repository, {\color{blue} \href{https://github.com/CharlvdM/RobotAndMaze}{RobotAndMaze}}, I have created containing the MATLAB and Latex code.
 
 The maze boundaries should be computed as $x$ and $y$ state constraints based on the location of the robot. GPOPS will not be used to solve the maze. Rather, the incorrect routes will be closed, so that the solved maze is like a racetrack with sharp corners.
 
@@ -178,19 +181,16 @@ The velocity limit in the {\color{blue} \href{https://github.com/Yurof/WheeledRo
 	\end{matrix} \nonumber
 \end{equation}
 
-There is a force limit specified as $20$ (without a unit) in the {\color{blue} \href{https://github.com/Yurof/WheeledRobotSimulations}{WheeledRobotSimulations}} project, which is passed to the motor control function of the {\color{blue} \href{https://github.com/bulletphysics/bullet3}{PyBullet}} library. Therefore, I assumed this was a torque limit, and set the force limit blindly from (\ref{eq:Force}), i.e.:
+There is a force limit specified as $20$ (without a unit) in the {\color{blue} \href{https://github.com/Yurof/WheeledRobotSimulations}{WheeledRobotSimulations}} project, which is passed to the motor control function of the {\color{blue} \href{https://github.com/bulletphysics/bullet3}{PyBullet}} library. Since a torque of  $20$ $\mathrm{Nm}$ is not realistic, a torque limit of $0.6 \, \mathrm{Nm}$, resulting in a force limit of $20 \, \mathrm{N}$ from (\ref{eq:Force}), i.e.:
 \begin{equation}
 	\begin{matrix}
-		F_{R/L \, \mathrm{min}} = -666.7, & F_{R/L \, \mathrm{max}} = 666.7
+		F_{R/L \, \mathrm{min}} = -20, & F_{R/L \, \mathrm{max}} = 20.
 	\end{matrix} \nonumber
 \end{equation}
-A torque of $20$ $\mathrm{Nm}$ is not realistic. A better limit would have been $0.6$ $\mathrm{Nm}$, resulting in a force limit of $20$ N.
 
 \subsection{Solver Options}
 
-My problems with the simulation (see Section \ref{sec:SimResults}), is probably due to a competence issue with GPOPS, specifically the solver options.
-
-The dynamics of this problem seemed to me to be similar to the minimum time to climb example GPOPS example. Therefore, I copied the mesh and solver settings from that example.
+The dynamics of this problem seemed to be similar to the minimum time to climb example GPOPS example. Therefore, I copied the mesh and solver settings from that example.
 
 \subsection{Simulation Results}
 \label{sec:SimResults}

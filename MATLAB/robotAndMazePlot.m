@@ -89,3 +89,7 @@ set(yl,'FontSize',18);
 set(ll,'FontSize',18,'Interpreter','LaTeX');
 set(gca,'FontSize',16,'FontName','Times');
 grid on
+set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
+set(gcf,'Position', figScreenPosition);
+set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
+    'PaperSize', figScreenPosition(3:4));
