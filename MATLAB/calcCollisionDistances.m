@@ -1,60 +1,71 @@
 function [xLeft, xRight, yBottom, yTop] = ...
     calcCollisionDistances(x, y, xCollisonMatrix, yCollisonMatrix)
 
-xLeft = zeros(size(x));
-xRight = zeros(size(x));
-yBottom = zeros(size(y));
-yTop = zeros(size(y));
+if isnan(x(1)) || isnan(y(1))
+    xLeft = NaN;
+    xRight = NaN;
+    yBottom = NaN;
+    yTop = NaN;
+else
+    xLeft = zeros(size(x));
+    xRight = zeros(size(x));
+    yBottom = zeros(size(y));
+    yTop = zeros(size(y));
+    
+    N = size(x,1); % Number of collocation points
+    
+    for i = 1:N
+    
+        matRow = floor(y(i));
+        matCol = floor(x(i));
+    
+        xLeftSearch = matCol;
+        while xLeftSearch >= 0
+            if xCollisonMatrix(matRow+1, xLeftSearch+1)
+                xLeft(i) = x(i) - xLeftSearch;
+                break;
+            end
+            xLeftSearch = xLeftSearch - 1;
+        end
+    
+        xRightSearch = matCol;
+        xMatrixWidth = size(xCollisonMatrix, 2);
+        while xRightSearch < xMatrixWidth
+            xRightSearch = xRightSearch + 1;
+            if xRightSearch >= xMatrixWidth
+                xRight(i) = xMatrixWidth - x(i);
+            elseif xCollisonMatrix(matRow+1, xRightSearch+1)
+                xRight(i) = xRightSearch - x(i);
+                break;
+            end
+        end
 
-N = size(x,1); % Number of collocation points
+        yBottomSearch = matRow;
+        while yBottomSearch >= 0
+            if yCollisonMatrix(yBottomSearch+1, matCol+1)
+                yBottom(i) = y(i) - yBottomSearch;
+                break;
+            end
+            yBottomSearch = yBottomSearch - 1;
+        end
 
-for i = 1:N
-    
-    matRow = floor(y(i));
-    matCol = floor(x(i));
-    
-    xLeftSearch = matCol;
-    while xLeftSearch >= 0
-        if xCollisonMatrix(matRow+1, xLeftSearch+1)
-            xLeft(i) = x(i) - xLeftSearch;
-            break;
-        end
-        xLeftSearch = xLeftSearch - 1;
-    end
-    
-    xRightSearch = matCol;
-    xMatrixWidth = size(xCollisonMatrix, 2);
-    while xRightSearch < xMatrixWidth
-        xRightSearch = xRightSearch + 1;
-        if xRightSearch >= xMatrixWidth
-            xRight(i) = xMatrixWidth - x(i);
-        elseif xCollisonMatrix(matRow+1, xRightSearch+1)
-            xRight(i) = xRightSearch - x(i);
-            break;
+        yTopSearch = matRow;
+        yMatrixLength = size(yCollisonMatrix, 1);
+        while yTopSearch < yMatrixLength
+            yTopSearch = yTopSearch + 1;
+            if yTopSearch >= yMatrixLength
+                yTop(i) = yMatrixLength - y(i);
+            elseif yCollisonMatrix(yTopSearch+1, matCol+1)
+                yTop(i) = yTopSearch - y(i);
+                break;
+            end
         end
     end
-    
-    yBottomSearch = matRow;
-    while yBottomSearch >= 0
-        matColPlusOne = matCol+1
-        if yCollisonMatrix(yBottomSearch+1, matCol+1)
-            yBottom(i) = y(i) - yBottomSearch;
-            break;
-        end
-        yBottomSearch = yBottomSearch - 1;
-    end
-    
-    yTopSearch = matRow;
-    yMatrixLength = size(yCollisonMatrix, 1);
-    while yTopSearch < yMatrixLength
-        yTopSearch = yTopSearch + 1;
-        if yTopSearch >= yMatrixLength
-            yTop(i) = yMatrixLength - y(i);
-        elseif yCollisonMatrix(yTopSearch+1, matCol+1)
-            yTop(i) = yTopSearch - y(i);
-            break;
-        end
-    end
+    radius = 0.15;
+    xLeft = xLeft - radius;
+    xRight = xRight - radius;
+    yBottom = yBottom - radius;
+    yTop = yTop - radius;
 end
 
 end

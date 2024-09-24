@@ -24,7 +24,9 @@ phaseout.dynamics = [vDot, thetaDot, xDot, yDot, omegaDot];
 if input.auxdata.pathConstraintsActive
     [xLeft, xRight, yBottom, yTop] = calcCollisionDistances(...
         x, y, input.auxdata.xColMatrix, input.auxdata.yColMatrix);
-    phaseout.phase = [xLeft, xRight, yBottom, yTop];
+    phaseout.path = [xLeft, xRight, yBottom, yTop];
+    % phaseout.path = [ones(size(x,1),1), ones(size(x,1),1), ones(size(x,1),1), ones(size(x,1),1)];
+    % phaseout.path = zeros(size(x,1),1);
 end
 
 %---------------------------------------------%
