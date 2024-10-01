@@ -25,6 +25,36 @@ yColMatrix =   [1   1   1   1
 auxdata.xColMatrix = xColMatrix;
 auxdata.yColMatrix = yColMatrix;
 
+Maze = [MazeCell.R      MazeCell.ANW    MazeCell.ANE    MazeCell.ANW
+        MazeCell.CNW    MazeCell.CSE    MazeCell.CSW    MazeCell.U
+        MazeCell.ASE    MazeCell.L      MazeCell.L      MazeCell.ASW];
+MazeOrder = [0  1   4   5
+            11  2   3   6
+            10  9   8   7];
+% This table's columns are: 
+%   s       xLeft   xRight  yTop    yBottom
+MazeBoundaries = [...
+    0       0       2       0.5     0.5
+    1       1       1       0.5     0.5
+    1.5     1.5     0.5     1.5     0.5
+    2       0.5     0.5     1       1
+    2.5     0.5     1.5     0.5     1.5
+    3       1       1       0.5     0.5
+    3.5     1.5     0.5     0.5     1.5
+    4       0.5     0.5     1       1
+    4.5     0.5     1.5     1.5     0.5
+    5       1       1       0.5     0.5
+    5.5     1.5     0.5     2.5     0.5
+    6       0.5     0.5     2       1
+    7       0.5     0.5     1       2
+    7.5     3.5     0.5     0.5     2.5
+    8       3       1       0.5     0.5
+    10      1       3       0.5     0.5
+    10.5    0.5     3.5     0.5     1.5
+    11      0.5     0.5     1       1
+    11.5    0.5     0.5     1.5     0.5
+    12      0       1       1.5     0.5];
+
 % This first iteration simply attempts to get the robot to the specified
 % final location and orientation, without any maze/track contraints.
 
@@ -34,10 +64,10 @@ auxdata.I = 0.5*auxdata.m*(rRobot^2);   % Robot z axis inertia
 auxdata.w = 0.13;                   % Distance from the wheels to robot CoG
 
 t0 = 0;                                             % initial time
-tfmin = 0; tfmax = 20;                              % time boundary
+tfmin = 0; tfmax = 10;                              % time boundary
 v0 = 0; theta0 = 0; x0 = 0.5; y0 = 0.5; omega0 = 0; % initial state
-% thetatf = 0; xf = 2.5; yf = 1.5;                    % final state
-thetatf = 0; xf = 3.5; yf = 0.5;                    % final state
+thetatf = 0; xf = 2.5; yf = 1.5;                    % final state
+% thetatf = 0; xf = 3.5; yf = 0.5;                    % final state
 % vmin = -16.5; vmax = 16.5;
 vmin = 0; vmax = 16.5;
 thetamin = -2*pi; thetamax = 2*pi;
@@ -69,22 +99,24 @@ bounds.phase.control.lower = [Frmin, Flmin];
 bounds.phase.control.upper = [Frmax, Flmax];
 
 % Assuming you have 4 path constraints (xLeft, xRight, yBottom, yTop)
-lowerPathBounds = [0, 0, 0, 0];  % Path constraint lower bounds (>= 0)
-upperPathBounds = [xmax, xmax, ymax, ymax];  % Path constraint upper bounds
+% lowerPathBounds = [0, 0, 0, 0];  % Path constraint lower bounds (>= 0)
+% upperPathBounds = [xmax, xmax, ymax, ymax];  % Path constraint upper bounds
 % upperPathBounds = [Inf, Inf, Inf, Inf];  % Path constraint upper bounds
-% lowerPathBounds = 0;  % Path constraint lower bounds (>= 0)
-% upperPathBounds = 0;  % Path constraint upper bounds
+lowerPathBounds = 0;  % Path constraint lower bounds (>= 0)
+upperPathBounds = 0;  % Path constraint upper bounds
 
 % Add these bounds to the phase
-bounds.phase.path.lower = lowerPathBounds;
-bounds.phase.path.upper = upperPathBounds;
+% bounds.phase.path.lower = lowerPathBounds;
+% bounds.phase.path.upper = upperPathBounds;
+% bounds.phase.path.lower = -100;
+% bounds.phase.path.upper = 100;
 
 %-------------------------------------------------------------------------%
 %---------------------- Provide Guess of Solution ------------------------%
 %-------------------------------------------------------------------------%
 guess.phase.time    = [t0; tfmax]; 
-guess.phase.state   = [[v0; v0], [theta0; thetatf], [x0; xf], [y0; yf], ...
-    [omega0; omega0]];
+guess.phase.state   = [[v0; vmax], [theta0; thetatf], [x0; xf], ...
+    [y0; yf], [omega0; omegamin]];
 guess.phase.control = [[Frmax; Frmax],[Flmax; Flmax]];
 
 %-------------------------------------------------------------------------%
@@ -96,17 +128,17 @@ guess.phase.control = [[Frmax; Frmax],[Flmax; Flmax]];
 % mesh.colpointsmin = 4;
 % mesh.colpointsmax = 10;
 
-% mesh.method       = 'hp-LiuRao-Legendre';
-% mesh.tolerance    = 1e-6;
-% mesh.colpointsmin = 4;
-% mesh.colpointsmax = 10;
-% mesh.sigma        = 0.75;
-
 mesh.method       = 'hp-LiuRao-Legendre';
-mesh.tolerance    = 1e-4;
+mesh.tolerance    = 1e-6;
 mesh.colpointsmin = 4;
-mesh.colpointsmax = 6;
+mesh.colpointsmax = 10;
 mesh.sigma        = 0.75;
+
+% mesh.method       = 'hp-LiuRao-Legendre';
+% mesh.tolerance    = 1e-5;
+% mesh.colpointsmin = 4;
+% mesh.colpointsmax = 6;
+% mesh.sigma        = 0.75;
 
 mesh.maxiterations              = 10;
 

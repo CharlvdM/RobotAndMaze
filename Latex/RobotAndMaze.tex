@@ -173,19 +173,51 @@ Before creating a complex simulation with the full track (solved maze), a proble
 The velocity limit in the {\color{blue} \href{https://github.com/Yurof/WheeledRobotSimulations}{WheeledRobotSimulations}} project was set to $16.5$ $\mathrm{m/s}$. From the given boundary conditions, the robot isn't expected to ever do more than a full rotation. The position limits are set slightly outside of the boundary conditions. The angular rate is not expected to be very high. Therefore:
 \begin{equation}
 	\begin{matrix}
-		v_\mathrm{min} = -16.5, & v_\mathrm{max} = 16.5 \\
-		\theta_\mathrm{min} = - 2 \pi & \theta_\mathrm{max} = 2 \pi \\
-		x_\mathrm{min} = - 10 & x_\mathrm{max} = 25 \\
-		y_\mathrm{min} = - 10 & y_\mathrm{max} = 20 \\
-		\omega_\mathrm{min} = - 10 & \omega_\mathrm{max} = 10
+		v_\mathrm{min} = -16.5 & \theta_\mathrm{min} = - 2 & x_\mathrm{min} = - 10 & y_\mathrm{min} = - 10 & \omega_\mathrm{min} = - 10 \\
+		v_\mathrm{max} = 16.5 & \theta_\mathrm{max} = 2 \pi & x_\mathrm{max} = 25 & y_\mathrm{max} = 20 & \omega_\mathrm{max} = 10
 	\end{matrix} \nonumber
 \end{equation}
 
 There is a force limit specified as $20$ (without a unit) in the {\color{blue} \href{https://github.com/Yurof/WheeledRobotSimulations}{WheeledRobotSimulations}} project, which is passed to the motor control function of the {\color{blue} \href{https://github.com/bulletphysics/bullet3}{PyBullet}} library. Since a torque of  $20$ $\mathrm{Nm}$ is not realistic, a torque limit of $0.6 \, \mathrm{Nm}$, resulting in a force limit of $20 \, \mathrm{N}$ from (\ref{eq:Force}), i.e.:
 \begin{equation}
 	\begin{matrix}
-		F_{R/L \, \mathrm{min}} = -20, & F_{R/L \, \mathrm{max}} = 20.
+		F_{R/L \, \mathrm{min}} = -20 & F_{R/L \, \mathrm{max}} = 20.
 	\end{matrix} \nonumber
+\end{equation}
+
+The robot is expected to reach this final time in a few seconds. A final time limit of $10$ seconds is chosen, i.e.:
+\begin{equation}
+	\begin{matrix}
+		t_{0 \, \mathrm{min}} = 0 & t_{f \, \mathrm{min}} = 0 \\
+		t_{0 \, \mathrm{max}} = 0 & \ t_{f \, \mathrm{max}} = 10
+	\end{matrix} \nonumber
+\end{equation}
+
+\subsection{Initial Guess}
+
+For this simple problem, a guess for the initial and final time will be given. The final time is chosen to equal the maximum time, which is expected to be much larger than the actual final time, but it should provide an accurate enough sample point for interpolation for this problem. However, for the full maze problem, more intermediate guesses will probably have to be provided, possibly even tracking the full path of the maze.
+
+The time sample guesses are:
+\begin{equation}
+	\boldsymbol t_\mathrm{guess} = \begin{bmatrix}
+		0 \\ t_{f \, \mathrm{max}}
+	\end{bmatrix} \nonumber
+\end{equation}
+
+Since the final y position is higher than the start and the final angle should be zero, the final angular rate is expected to be a large negative value. Therefore, the state guesses are:
+\begin{equation}
+	\boldsymbol{x}_\mathrm{guess} = \begin{bmatrix}
+		v_0 & \theta_0 & x_0 & x_f & \omega_0 \\
+		v_\mathrm{max} & \theta_f & x_0 & y_f & \omega_\mathrm{min}
+	\end{bmatrix} \nonumber
+\end{equation}
+
+To minimize time it is expected that the wheel forces will be at a maximum throughout most of the solution:
+\begin{equation}
+	\boldsymbol{u}_\mathrm{guess} = \begin{bmatrix}
+		F_{R \, \mathrm{max}} & F_{L \, \mathrm{max}} \\
+		F_{R \, \mathrm{max}} & F_{L \, \mathrm{max}}
+	\end{bmatrix} \nonumber
 \end{equation}
 
 \subsection{Solver Options}
@@ -195,9 +227,7 @@ The dynamics of this problem seemed to be similar to the minimum time to climb e
 \subsection{Simulation Results}
 \label{sec:SimResults}
 
-Currently I am not able to solve this problem in GPOPS. I am not sure whether the model, limits, or solver options is the problem. The simulation results presented here were found after running GPOPS for a few hours. I've tried many different boundary conditions and limits, but none of the changes I've made seem to have sped up GPOPS.
-
-The robot reaches the correct final position, as seen in Fig. \ref{fig:States}, but the trajectory shown in Fig. \ref{fig:Trajectory} is clearly not optimal.
+The robot reaches the correct final position, as seen in Fig. \ref{fig:States}, and Fig. \ref{fig:Trajectory}.
 
 \begin{figure}[h!]
 	\includegraphics{Figures/States.pdf}
@@ -213,7 +243,7 @@ The robot reaches the correct final position, as seen in Fig. \ref{fig:States}, 
 	\label{fig:Trajectory}
 \end{figure}
 
-Based on the chosen limits, the robot is allowed to run backwards, as seen by the velocity in Fig. \ref{fig:States} and the angle in Fig. \ref{fig:Angle}. In addition, the forces are very large, as seen in Fig. \ref{fig:Forces}, possibly causing numerical instability. Constraining the limits further is expected to improve the simulation, but I have not been successful yet.
+There are quite sudden changes in angle, as seen in Fig. \ref{fig:Angle}, caused by sudden changes in the forces, as seen in Fig. \ref{fig:Forces}. The sudden changes in force might be difficult to replicate practically. Limiting the rate of change of the forces might be useful in future iterations.
 
 \begin{figure}[h!]
 	\includegraphics{Figures/Angle.pdf}
@@ -228,6 +258,64 @@ Based on the chosen limits, the robot is allowed to run backwards, as seen by th
 	\caption{Right and left wheel forces.}
 	\label{fig:Forces}
 \end{figure}
+
+\clearpage  % Ensures all figures are processed before the next section starts
+
+\section{Basic Maze Simulation}
+
+As mentioned, path constraints/bounds are needed to implement the maze. A simple maze will be used first, as shown in Fig. \ref{fig:SimpleMaze}.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=6cm]{Figures/SimpleMaze.png}
+	\caption{Simple maze. Each cell is 1m by 1m, so that this maze width and height is $4 \times 3 \ \mathrm{m}$.}
+	\label{fig:SimpleMaze}
+\end{figure}
+
+The maze boundary is enforced by setting path constraints in the \textbf{robotAndMazeContinuous.m} file as follows:
+\begin{equation} \label{eq:Bounds}
+	\boldsymbol{B} = \begin{bmatrix}
+		\boldsymbol{x_\mathrm{Left}} & \boldsymbol{x_\mathrm{Right}} & \boldsymbol{y_\mathrm{Bottom}} & \boldsymbol{y_\mathrm{Top}}
+	\end{bmatrix},
+\end{equation}
+where the number of rows in the path bounds $\boldsymbol{B}$ is equal to the number of collocation points, $\boldsymbol{x_\mathrm{Left}}$ \& $\boldsymbol{x_\mathrm{Right}}$ are the distances from the robot to the closest left and right boundaries for each collocation point, and $\boldsymbol{y_\mathrm{Bottom}}$ \& $\boldsymbol{y_\mathrm{Top}}$ are the distances from the robot to the closest bottom and top boundaries for each collocation point.
+
+Given the definition of the path constraints in (\ref{eq:Bounds}), the upper and lower limits thereof, defined in \textbf{robotAndMazeMain.m}, are:
+\begin{align}
+	B_\mathrm{lower} &= \begin{bmatrix}
+		0 & 0 & 0 & 0
+	\end{bmatrix} \\
+	B_\mathrm{upper} &= \begin{bmatrix}
+		x_\mathrm{max} & x_\mathrm{max} & y_\mathrm{max} & y_\mathrm{max}
+	\end{bmatrix},
+\end{align}
+where $x_\mathrm{max}=4$ and $y_\mathrm{max}=3$ for this problem.
+
+To find the distances in (\ref{eq:Bounds}), a function of the following form is created:
+\begin{equation}
+	\begin{bmatrix}
+		\boldsymbol{x_\mathrm{Left}} & \boldsymbol{x_\mathrm{Right}} & \boldsymbol{y_\mathrm{Bottom}} & \boldsymbol{y_\mathrm{Top}}
+	\end{bmatrix} = \mathrm{calcCollisionDistances} \left( \begin{matrix}
+	\boldsymbol{x}, & \boldsymbol{y}, & \boldsymbol{M_x}, & \boldsymbol{M_y}
+	\end{matrix}
+	\right), \nonumber
+\end{equation}
+where $x$ and $y$ are the xy coordinates for the robot at each collocation point, and $M_x$ and $M_y$ are the x and y collision matrices. These matrices have the following form:
+\begin{align}
+	M_x = \begin{bmatrix}
+		1 & 0 & 1 & 0 \\
+		1 & 1 & 0 & 1 \\
+		1 & 0 & 0 & 0
+	\end{bmatrix} \nonumber \\
+	M_x = \begin{bmatrix}
+		1 & 1 & 1 & 1 \\
+		1 & 0 & 0 & 0 \\
+		0 & 1 & 1 & 0
+		\end{bmatrix} \nonumber
+\end{align}
+corresponding to the vertical and horizontal wall positions of Fig. \ref{fig:SimpleMaze} respectively.
+
+Currently, I am unable to solve a problem with phase constraints. In addition, I do not believe that I have implemented an optimal wall collision distances calculation.
 
 %\bibliographystyle{IEEEtran}
 %\bibliography{References}

@@ -22,12 +22,16 @@ omegaDot          = (1/I)*w*(Fr-Fl);
 phaseout.dynamics = [vDot, thetaDot, xDot, yDot, omegaDot];
 
 if input.auxdata.pathConstraintsActive
-    [xLeft, xRight, yBottom, yTop] = calcCollisionDistances(...
-        x, y, input.auxdata.xColMatrix, input.auxdata.yColMatrix);
-    phaseout.path = [xLeft, xRight, yBottom, yTop];
+    % [xLeft, xRight, yBottom, yTop] = calcCollisionDistances(...
+    %     x, y, input.auxdata.xColMatrix, input.auxdata.yColMatrix);
+
+    % phaseout.path = [xLeft, xRight, yBottom, yTop];
     % phaseout.path = [ones(size(x,1),1), ones(size(x,1),1), ones(size(x,1),1), ones(size(x,1),1)];
-    % phaseout.path = zeros(size(x,1),1);
 end
+% phaseout.path = x-y;
+
+% [left, right] = calcTrackBoundary(x, y, input.auxdata.TrackTable);
+% phaseout.path = [left, right];
 
 %---------------------------------------------%
 % END: function brachistochroneContinuous.m   %
