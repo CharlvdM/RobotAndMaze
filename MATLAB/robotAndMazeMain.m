@@ -80,6 +80,9 @@ xmin = 0; xmax = 4;
 ymin = 0; ymax = 3;
 omegamin = -20; omegamax = 20; % Angular rate (rad/s) limit
 
+s0 = 0;
+smax = 3;
+
 % motorMaxTorue = 20;
 motorMaxTorue = 0.6; % Equates to a max force of 20 N per motor
 wheelRadius = 0.03;
@@ -103,6 +106,9 @@ bounds.phase.finalstate.upper = [vmax,thetamax,xf,yf,omegamax];
 bounds.phase.control.lower = [Frmin, Flmin]; 
 bounds.phase.control.upper = [Frmax, Flmax];
 
+bounds.phase.integral.lower = 0;
+bounds.phase.integral.upper = smax;
+
 % Assuming you have 4 path constraints (xLeft, xRight, yBottom, yTop)
 % lowerPathBounds = [0, 0, 0, 0];  % Path constraint lower bounds (>= 0)
 % upperPathBounds = [xmax, xmax, ymax, ymax];  % Path constraint upper bounds
@@ -119,10 +125,12 @@ bounds.phase.path.upper = upperPathBounds;
 %-------------------------------------------------------------------------%
 %---------------------- Provide Guess of Solution ------------------------%
 %-------------------------------------------------------------------------%
-guess.phase.time    = [t0; tfmax]; 
+% guess.phase.time    = [t0; tfmax];
+guess.phase.time    = [s0; smax]; % The independent variable is now s (center line displacement)
 guess.phase.state   = [[v0; vmax], [theta0; 0], [x0; xf], ...
-    [y0; yf], [omega0; omegamin]];
+    [y0; yf], [omega0; omega0]];
 guess.phase.control = [[Frmax; Frmax],[Flmax; Flmax]];
+guess.phase.integral = 2.5;
 
 %-------------------------------------------------------------------------%
 %----------Provide Mesh Refinement Method and Initial Mesh ---------------%

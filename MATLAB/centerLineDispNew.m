@@ -6,8 +6,8 @@ function [d, s, vs] = ...
     centerLineDispNew(x, y, xDot, yDot, Maze, MazeOrder, Wc)
 if isnan(x(1)) || isnan(y(1))
     d = NaN;
-    s = NaN;
-    vs = NaN;
+    s = 0;
+    vs = 1;
 else
     c = floor(x/Wc); % row
     r = floor(y/Wc); % column
@@ -103,7 +103,10 @@ else
     %     rethrow(EXP)
         d = Wc/2;
         s = 0;
-        vs = 0;
+        vs = 1;
+    end
+    if vs == 0
+        vs = 1e-6;
     end
 end
 end

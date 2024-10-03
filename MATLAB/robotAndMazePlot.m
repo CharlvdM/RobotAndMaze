@@ -2,13 +2,28 @@ savePlotData = false;
 figDirectory = '../Latex/Figures/';
 figScreenPosition = [5 5 15 9];
 
-t = solution.phase(1).time;
+s = solution.phase(1).time;
 v = solution.phase(1).state(:,1);
 theta = solution.phase(1).state(:,2);
 x = solution.phase(1).state(:,3);
 y = solution.phase(1).state(:,4);
 xDot = v.*cos(theta);
 yDot = v.*sin(theta);
+
+N = size(x,1);
+d = zeros(N,1);
+% s = zeros(N,1);
+vs = zeros(N,1);
+for i = 1:N
+    [d(i), ~, vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), ...
+        Maze, MazeOrder, Wc);
+end
+
+t = (1./vs).*s;
+
+figure(25)
+plot(t, vs);
+% plot(t, s);
 
 figure(1)
 pp = plot(solution.phase(1).time, solution.phase(1).state(:,3:4),'-o', ...
