@@ -15,7 +15,7 @@ else
     % [r, c];
     try
     cell = Maze(r+1, c+1);
-    [~, s] = MazeOrder(r+1, c+1); % Displacement thus far to get to the current cell
+    s = MazeOrder{r+1, c+1}(2); % Displacement thus far to get to the current cell
     if (cell == "R") || (cell == "L") || (cell == "U") || (cell == "D")
         switch cell
             case "R"
@@ -44,49 +44,49 @@ else
                 Y = r*Wc;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = 0.5*Wc - re;
-                s = s + 0.5*Wc*(pi/2 - atan2(y-Y,x-X));
+                s = s + 0.5*Wc*(pi/2 - atan((y-Y)/(x-X)));
             case "CNW"
                 X = c*Wc;
                 Y = (r+1)*Wc;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = 0.5*Wc - re;
-                s = s + 0.5*Wc*atan2(y-Y,x-X);
+                s = s - 0.5*Wc*atan((y-Y)/(x-X));
             case "CNE"
                 X = (c+1)*Wc;
                 Y = (r+1)*Wc;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = 0.5*Wc - re;
-                s = s + 0.5*Wc*(pi/2 - atan2(y-Y,x-X));
+                s = s + 0.5*Wc*(pi/2 - atan((y-Y)/(x-X)));
             case "CSE"
                 X = (c+1)*Wc;
                 Y = r*Wc;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = 0.5*Wc - re;
-                s = s + 0.5*Wc*atan2(y-Y,x-X);
+                s = s - 0.5*Wc*atan((y-Y)/(x-X));
             case "ANW"
                 X = c*Wc;
                 Y = (r+1)*Wc;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = re - 0.5*Wc;
-                s = s + 0.5*Wc*(pi/2 - atan2(y-Y,x-X));
+                s = s + 0.5*Wc*(pi/2 + atan((y-Y)/(x-X)));
             case "ANE"
                 X = (c+1)*Wc;
                 Y = (r+1)*Wc;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = re - 0.5*Wc;
-                s = s + 0.5*Wc*atan2(y-Y,x-X);
+                s = s + 0.5*Wc*atan((y-Y)/(x-X));
             case "ASE"
                 X = (c+1)*Wc;
                 Y = r*Wc;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = re - 0.5*Wc;
-                s = s + 0.5*Wc*(pi/2 - atan2(y-Y,x-X));
+                s = s + 0.5*Wc*(pi/2 + atan((y-Y)/(x-X)));
             case "ASW"
                 X = c*Wc;
                 Y = r*Wc;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = re - 0.5*Wc;
-                s = s + 0.5*Wc*atan2(y-Y,x-X);
+                s = s + 0.5*Wc*atan((y-Y)/(x-X));
             otherwise
                 disp('Error in centerLineDisplacement');
         end

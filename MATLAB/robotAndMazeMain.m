@@ -30,9 +30,9 @@ Maze = ["R", "ANW", "ANE", "ANW";
         "CNW", "CSE", "CSW", "U";
         "ASE", "L", "L", "ASW"];
 auxdata.Maze = Maze;
-MazeOrder = [[0, 0]                 [1, Wc]                 [4, Wc*(1+3*(pi/4))]    [5, Wc*(1+4*(pi/4))]
-            [11, Wc*(4+7*(pi/4))]   [2, Wc*(1+pi/4)]        [3, Wc*(1+2*(pi/4))]    [6, Wc*(1+5*(pi/4))]
-            [10, Wc*(4+6*(pi/4))]   [9, Wc*(3+6*(pi/4))]    [8, Wc*(2+6*(pi/4))]    [7, Wc*(2+5*(pi/4))]];
+MazeOrder = {[0, 0],                [1, Wc],                [4, Wc*(1+3*(pi/4))],   [5, Wc*(1+4*(pi/4))];
+            [11, Wc*(4+7*(pi/4))],  [2, Wc*(1+pi/4)],       [3, Wc*(1+2*(pi/4))],   [6, Wc*(1+5*(pi/4))];
+            [10, Wc*(4+6*(pi/4))],  [9, Wc*(3+6*(pi/4))],   [8, Wc*(2+6*(pi/4))],   [7, Wc*(2+5*(pi/4))]};
 auxdata.MazeOrder = MazeOrder;
 auxdata.Wc = Wc; 
 % This table's columns are: 

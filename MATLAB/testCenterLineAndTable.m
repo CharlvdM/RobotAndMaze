@@ -10,14 +10,15 @@ y = solution.phase(1).state(:,4);
 xDot = v.*cos(theta);
 yDot = v.*sin(theta);
 N = length(t);
-s = zeros(N,1);
+% s = zeros(N,1);
 cellnr = zeros(N,1);
 d = zeros(N,1);
+s = zeros(N,1);
 vs = zeros(N,1);
 
 for i = 1:N
-    [s(i), cellnr(i), ~] = centerLineDisplacement(x(i), y(i), Maze, MazeOrder, Wc);
-    [d(i), vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), Maze, Wc);
+    % [s(i), cellnr(i), ~] = centerLineDisplacement(x(i), y(i), Maze, MazeOrder, Wc);
+    [d(i), s(i), vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), Maze, MazeOrder, Wc);
 end
 method = 'pchip';
 xLeft   = interp1(MazeBoundaries(:,1),MazeBoundaries(:,2),s,method);
@@ -55,25 +56,25 @@ if savePlotData == true
     % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
 end
 
-figure(7)
-pp = plot(x, cellnr,'-o');
-xl = xlabel('$x$','Interpreter','LaTeX');
-yl = ylabel('$cellnr$','Interpreter','LaTeX');
-% ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
-set(pp,'LineWidth',1.25,'MarkerSize',8);
-set(xl,'FontSize',18);
-set(yl,'FontSize',18);
-% set(ll,'FontSize',18,'Interpreter','LaTeX');
-set(gca,'FontSize',16,'FontName','Times');
-grid on
-% set(gca, 'FontSize', fontSize, 'FontName', font);
-set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
-set(gcf,'Position', figScreenPosition);
-set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
-    'PaperSize', figScreenPosition(3:4));
-if savePlotData == true
-    % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
-end
+% figure(7)
+% pp = plot(x, cellnr,'-o');
+% xl = xlabel('$x$','Interpreter','LaTeX');
+% yl = ylabel('$cellnr$','Interpreter','LaTeX');
+% % ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
+% set(pp,'LineWidth',1.25,'MarkerSize',8);
+% set(xl,'FontSize',18);
+% set(yl,'FontSize',18);
+% % set(ll,'FontSize',18,'Interpreter','LaTeX');
+% set(gca,'FontSize',16,'FontName','Times');
+% grid on
+% % set(gca, 'FontSize', fontSize, 'FontName', font);
+% set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
+% set(gcf,'Position', figScreenPosition);
+% set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
+%     'PaperSize', figScreenPosition(3:4));
+% if savePlotData == true
+%     % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
+% end
 
 % figure(8)
 % pp = plot(x, xLeft, x, xLeftActual, '-o');
