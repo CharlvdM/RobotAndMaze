@@ -25,12 +25,16 @@ yColMatrix =   [1   1   1   1
 auxdata.xColMatrix = xColMatrix;
 auxdata.yColMatrix = yColMatrix;
 
-Maze = [MazeCell.R      MazeCell.ANW    MazeCell.ANE    MazeCell.ANW
-        MazeCell.CNW    MazeCell.CSE    MazeCell.CSW    MazeCell.U
-        MazeCell.ASE    MazeCell.L      MazeCell.L      MazeCell.ASW];
-MazeOrder = [0  1   4   5
-            11  2   3   6
-            10  9   8   7];
+Wc = 1; % Maze cell width
+Maze = ["R", "ANW", "ANE", "ANW";
+        "CNW", "CSE", "CSW", "U";
+        "ASE", "L", "L", "ASW"];
+auxdata.Maze = Maze;
+MazeOrder = [[0, 0]                 [1, Wc]                 [4, Wc*(1+3*(pi/4))]    [5, Wc*(1+4*(pi/4))]
+            [11, Wc*(4+7*(pi/4))]   [2, Wc*(1+pi/4)]        [3, Wc*(1+2*(pi/4))]    [6, Wc*(1+5*(pi/4))]
+            [10, Wc*(4+6*(pi/4))]   [9, Wc*(3+6*(pi/4))]    [8, Wc*(2+6*(pi/4))]    [7, Wc*(2+5*(pi/4))]];
+auxdata.MazeOrder = MazeOrder;
+auxdata.Wc = Wc; 
 % This table's columns are: 
 %   s       xLeft   xRight  yTop    yBottom
 MazeBoundaries = [...
@@ -64,16 +68,17 @@ auxdata.I = 0.5*auxdata.m*(rRobot^2);   % Robot z axis inertia
 auxdata.w = 0.13;                   % Distance from the wheels to robot CoG
 
 t0 = 0;                                             % initial time
-tfmin = 0; tfmax = 10;                              % time boundary
+tfmin = 0; tfmax = 5;                              % time boundary
 v0 = 0; theta0 = 0; x0 = 0.5; y0 = 0.5; omega0 = 0; % initial state
-thetatf = 0; xf = 2.5; yf = 1.5;                    % final state
+% thetatf = 0; xf = 2.5; yf = 1.5;                    % final state
+xf = 2.5; yf = 1.4;                    % final state
 % thetatf = 0; xf = 3.5; yf = 0.5;                    % final state
 % vmin = -16.5; vmax = 16.5;
 vmin = 0; vmax = 16.5;
 thetamin = -2*pi; thetamax = 2*pi;
 xmin = 0; xmax = 4;
 ymin = 0; ymax = 3;
-omegamin = -10; omegamax = 10; % Angular rate (rad/s) limit
+omegamin = -20; omegamax = 20; % Angular rate (rad/s) limit
 
 % motorMaxTorue = 20;
 motorMaxTorue = 0.6; % Equates to a max force of 20 N per motor
@@ -93,8 +98,8 @@ bounds.phase.initialstate.lower = [v0,theta0,x0,y0,omega0];
 bounds.phase.initialstate.upper = [v0,theta0,x0,y0,omega0]; 
 bounds.phase.state.lower = [vmin,thetamin,xmin,ymin,omegamin]; 
 bounds.phase.state.upper = [vmax,thetamax,xmax,ymax,omegamax]; 
-bounds.phase.finalstate.lower = [vmin,thetatf,xf,yf,omegamin]; 
-bounds.phase.finalstate.upper = [vmax,thetatf,xf,yf,omegamax]; 
+bounds.phase.finalstate.lower = [vmin,thetamin,xf,yf,omegamin]; 
+bounds.phase.finalstate.upper = [vmax,thetamax,xf,yf,omegamax]; 
 bounds.phase.control.lower = [Frmin, Flmin]; 
 bounds.phase.control.upper = [Frmax, Flmax];
 
@@ -102,12 +107,12 @@ bounds.phase.control.upper = [Frmax, Flmax];
 % lowerPathBounds = [0, 0, 0, 0];  % Path constraint lower bounds (>= 0)
 % upperPathBounds = [xmax, xmax, ymax, ymax];  % Path constraint upper bounds
 % upperPathBounds = [Inf, Inf, Inf, Inf];  % Path constraint upper bounds
-lowerPathBounds = 0;  % Path constraint lower bounds (>= 0)
-upperPathBounds = 0;  % Path constraint upper bounds
+lowerPathBounds = -(0.5*Wc - rRobot);  % Path constraint lower bounds (>= 0)
+upperPathBounds = (0.5*Wc - rRobot);  % Path constraint upper bounds
 
 % Add these bounds to the phase
-% bounds.phase.path.lower = lowerPathBounds;
-% bounds.phase.path.upper = upperPathBounds;
+bounds.phase.path.lower = lowerPathBounds;
+bounds.phase.path.upper = upperPathBounds;
 % bounds.phase.path.lower = -100;
 % bounds.phase.path.upper = 100;
 
@@ -115,7 +120,7 @@ upperPathBounds = 0;  % Path constraint upper bounds
 %---------------------- Provide Guess of Solution ------------------------%
 %-------------------------------------------------------------------------%
 guess.phase.time    = [t0; tfmax]; 
-guess.phase.state   = [[v0; vmax], [theta0; thetatf], [x0; xf], ...
+guess.phase.state   = [[v0; vmax], [theta0; 0], [x0; xf], ...
     [y0; yf], [omega0; omegamin]];
 guess.phase.control = [[Frmax; Frmax],[Flmax; Flmax]];
 

@@ -2,11 +2,12 @@
 % Maze  2D array containing the MazeCell based on the current cell
 % MazeOrder Current cell's number
 % Wc    A cell width. It is assumed that the cells are square
-function [s, cellnr, d] = centerLineDisplacement(x, y, Maze, MazeOrder, Wc)
+function [d, s, vs] = ...
+    centerLineDispNew(x, y, xDot, yDot, Maze, MazeOrder, Wc)
 if isnan(x(1)) || isnan(y(1))
-    s = NaN;
-    cellnr = NaN;
     d = NaN;
+    s = NaN;
+    vs = NaN;
 else
     c = floor(x/Wc); % row
     r = floor(y/Wc); % column
@@ -14,102 +15,94 @@ else
     % [r, c];
     try
     cell = Maze(r+1, c+1);
-    catch
-    % catch EXP
-        % disp([x, y]);
-        % disp([r, c]);
-        % rethrow(EXP)
-        d = Wc/2;
-    end
-
-    cellnr = MazeOrder(r+1, c+1);
-    s = Wc * cellnr; % Displacement thus far to get to the current cell
-
+    [~, s] = MazeOrder(r+1, c+1); % Displacement thus far to get to the current cell
     if (cell == "R") || (cell == "L") || (cell == "U") || (cell == "D")
         switch cell
             case "R"
-                s = s + (x - (r*Wc));
                 d = (r+0.5)*Wc - y;
+                s = s + (x - (r*Wc));
+                vs = xDot;
             case "L"
-                s = s + ((r+1)*Wc - x);
                 d = y - (r+0.5)*Wc;
+                s = s + ((r+1)*Wc - x);
+                vs = -xDot;
             case "U"
-                s = s + (y - (c*Wc));
                 d = x - (c+0.5)*Wc;
+                s = s + (y - (c*Wc));
+                vs = yDot;
             case "D"
-                s = s + ((c+1)*Wc - y);
                 d = (c+0.5)*Wc - x;
+                s = s + ((c+1)*Wc - y);
+                vs = -yDot;
             otherwise
                 disp('Error in centerLineDisplacement');
         end
     else
-        a = 0;
-        b = 0;
         switch cell
             case "CSW"
                 X = c*Wc;
                 Y = r*Wc;
-                a = x-X;
-                b = y-Y;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = 0.5*Wc - re;
+                s = s + 0.5*Wc*(pi/2 - atan2(y-Y,x-X));
             case "CNW"
                 X = c*Wc;
                 Y = (r+1)*Wc;
-                a = Y-y;
-                b = x-X;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = 0.5*Wc - re;
+                s = s + 0.5*Wc*atan2(y-Y,x-X);
             case "CNE"
                 X = (c+1)*Wc;
                 Y = (r+1)*Wc;
-                a = X-x;
-                b = Y-y;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = 0.5*Wc - re;
+                s = s + 0.5*Wc*(pi/2 - atan2(y-Y,x-X));
             case "CSE"
                 X = (c+1)*Wc;
                 Y = r*Wc;
-                a = y-Y;
-                b = X-x;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = 0.5*Wc - re;
+                s = s + 0.5*Wc*atan2(y-Y,x-X);
             case "ANW"
                 X = c*Wc;
                 Y = (r+1)*Wc;
-                a = x-X;
-                b = Y-y;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = re - 0.5*Wc;
+                s = s + 0.5*Wc*(pi/2 - atan2(y-Y,x-X));
             case "ANE"
                 X = (c+1)*Wc;
                 Y = (r+1)*Wc;
-                a = Y-y;
-                b = X-x;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = re - 0.5*Wc;
+                s = s + 0.5*Wc*atan2(y-Y,x-X);
             case "ASE"
                 X = (c+1)*Wc;
                 Y = r*Wc;
-                a = X-x;
-                b = y-Y;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = re - 0.5*Wc;
+                s = s + 0.5*Wc*(pi/2 - atan2(y-Y,x-X));
             case "ASW"
                 X = c*Wc;
                 Y = r*Wc;
-                a = y-Y;
-                b = x-X;
                 re = sqrt((x-X)^2 + (y-Y)^2);
                 d = re - 0.5*Wc;
+                s = s + 0.5*Wc*atan2(y-Y,x-X);
             otherwise
                 disp('Error in centerLineDisplacement');
         end
-        if a < b
-            s = s + Wc*(0.5*a/b);
-        else
-            s = s + Wc*(1-(0.5*b/a));
-        end
+            vs = (0.5*Wc)*((x-X)*yDot - (y-Y)*xDot)/((x-X)^2+(y-Y)^2);
+            if (cell == "CSW") || (cell == "CNW") || (cell == "CNE") || (cell == "CSE")
+                vs = -1*vs;
+            end
+    end
+    catch
+    % catch EXP
+    %     disp([x, y]);
+    %     disp([r, c]);
+    %     rethrow(EXP)
+        d = Wc/2;
+        s = 0;
+        vs = 0;
     end
 end
 end

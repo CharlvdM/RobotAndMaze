@@ -2,6 +2,14 @@ savePlotData = false;
 figDirectory = '../Latex/Figures/';
 figScreenPosition = [5 5 15 9];
 
+t = solution.phase(1).time;
+v = solution.phase(1).state(:,1);
+theta = solution.phase(1).state(:,2);
+x = solution.phase(1).state(:,3);
+y = solution.phase(1).state(:,4);
+xDot = v.*cos(theta);
+yDot = v.*sin(theta);
+
 figure(1)
 pp = plot(solution.phase(1).time, solution.phase(1).state(:,3:4),'-o', ...
     solution.phase(1).time, solution.phase(1).state(:,1),'-o');
@@ -62,10 +70,17 @@ if savePlotData == true
 end
 
 figure(4)
-pp = plot(solution.phase(1).state(:,3),solution.phase(1).state(:,4),'-o');
+pp = plot(x,y,'-o');
+hold on
+LW = 2;
+plot([0 4 4 0 0], [0 0 3 3 0], 'k', 'LineWidth', LW);
+plot([2 2], [0 1], 'k', 'LineWidth', LW);
+plot([0 1 1 3 3], [1 1 2 2 1], 'k', 'LineWidth', LW);
+clear LW;
+hold off
 xl = xlabel('$x$','Interpreter','LaTeX');
 yl = ylabel('$y$','Interpreter','LaTeX');
-set(pp,'LineWidth',1.25,'MarkerSize',8);
+set(pp,'LineWidth',1.25,'MarkerSize',20);
 set(xl,'FontSize',18);
 set(yl,'FontSize',18);
 set(ll,'FontSize',18,'Interpreter','LaTeX');

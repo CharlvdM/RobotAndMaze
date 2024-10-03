@@ -3,19 +3,21 @@ figDirectory = '../Latex/Figures/';
 figScreenPosition = [5 5 15 9];
 
 t = solution.phase(1).time;
+v = solution.phase(1).state(:,1);
+theta = solution.phase(1).state(:,2);
 x = solution.phase(1).state(:,3);
 y = solution.phase(1).state(:,4);
+xDot = v.*cos(theta);
+yDot = v.*sin(theta);
 N = length(t);
 s = zeros(N,1);
 cellnr = zeros(N,1);
-xLeft = zeros(N,1);
-xRight = zeros(N,1);
-yTop = zeros(N,1);
-yBottom = zeros(N,1);
-Wc = 1;
+d = zeros(N,1);
+vs = zeros(N,1);
 
 for i = 1:N
-    [s(i), cellnr(i)] = centerLineDisplacement(x(i), y(i), Maze, MazeOrder, Wc);
+    [s(i), cellnr(i), ~] = centerLineDisplacement(x(i), y(i), Maze, MazeOrder, Wc);
+    [d(i), vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), Maze, Wc);
 end
 method = 'pchip';
 xLeft   = interp1(MazeBoundaries(:,1),MazeBoundaries(:,2),s,method);
@@ -73,10 +75,90 @@ if savePlotData == true
     % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
 end
 
-figure(8)
-pp = plot(x, xLeft, x, xLeftActual, '-o');
+% figure(8)
+% pp = plot(x, xLeft, x, xLeftActual, '-o');
+% xl = xlabel('$x$','Interpreter','LaTeX');
+% yl = ylabel('xLeft','Interpreter','LaTeX');
+% % ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
+% set(pp,'LineWidth',1.25,'MarkerSize',8);
+% set(xl,'FontSize',18);
+% set(yl,'FontSize',18);
+% % set(ll,'FontSize',18,'Interpreter','LaTeX');
+% set(gca,'FontSize',16,'FontName','Times');
+% grid on
+% % set(gca, 'FontSize', fontSize, 'FontName', font);
+% set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
+% set(gcf,'Position', figScreenPosition);
+% set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
+%     'PaperSize', figScreenPosition(3:4));
+% if savePlotData == true
+%     % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
+% end
+
+% figure(9)
+% pp = plot(x, yTop, x, yTopActual, '-o');
+% xl = xlabel('$x$','Interpreter','LaTeX');
+% yl = ylabel('yTop','Interpreter','LaTeX');
+% % ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
+% % set(ll,'FontSize',18,'Interpreter','LaTeX');
+% set(pp,'LineWidth',1.25,'MarkerSize',8);
+% set(xl,'FontSize',18);
+% set(yl,'FontSize',18);
+% set(gca,'FontSize',16,'FontName','Times');
+% grid on
+% % set(gca, 'FontSize', fontSize, 'FontName', font);
+% set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
+% set(gcf,'Position', figScreenPosition);
+% set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
+%     'PaperSize', figScreenPosition(3:4));
+% if savePlotData == true
+%     % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
+% end
+
+% figure
+% pp = plot(s_test, xRight_test);
+% xl = xlabel('$s$','Interpreter','LaTeX');
+% yl = ylabel('xRight','Interpreter','LaTeX');
+% % ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
+% % set(ll,'FontSize',18,'Interpreter','LaTeX');
+% set(pp,'LineWidth',1.25,'MarkerSize',8);
+% set(xl,'FontSize',18);
+% set(yl,'FontSize',18);
+% set(gca,'FontSize',16,'FontName','Times');
+% grid on
+% % set(gca, 'FontSize', fontSize, 'FontName', font);
+% set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
+% set(gcf,'Position', figScreenPosition);
+% set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
+%     'PaperSize', figScreenPosition(3:4));
+% if savePlotData == true
+%     % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
+% end
+
+% figure
+% pp = plot(s_test, yTop_test);
+% xl = xlabel('$s$','Interpreter','LaTeX');
+% yl = ylabel('yTop','Interpreter','LaTeX');
+% % ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
+% % set(ll,'FontSize',18,'Interpreter','LaTeX');
+% set(pp,'LineWidth',1.25,'MarkerSize',8);
+% set(xl,'FontSize',18);
+% set(yl,'FontSize',18);
+% set(gca,'FontSize',16,'FontName','Times');
+% grid on
+% % set(gca, 'FontSize', fontSize, 'FontName', font);
+% set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
+% set(gcf,'Position', figScreenPosition);
+% set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
+%     'PaperSize', figScreenPosition(3:4));
+% if savePlotData == true
+%     % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
+% end
+
+figure(12)
+pp = plot(x, d,'-o', [x(1), x(end)], [0.5*Wc - rRobot, 0.5*Wc - rRobot], 'k');
 xl = xlabel('$x$','Interpreter','LaTeX');
-yl = ylabel('xLeft','Interpreter','LaTeX');
+yl = ylabel('$d$','Interpreter','LaTeX');
 % ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
 set(pp,'LineWidth',1.25,'MarkerSize',8);
 set(xl,'FontSize',18);
@@ -93,55 +175,75 @@ if savePlotData == true
     % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
 end
 
-figure(9)
-pp = plot(x, yTop, x, yTopActual, '-o');
+figure(13)
+pp = plot(t, d,'-o', [t(1), t(end)], [0.5*Wc - rRobot, 0.5*Wc - rRobot], 'k');
+xl = xlabel('$t$','Interpreter','LaTeX');
+yl = ylabel('$d$','Interpreter','LaTeX');
+% ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
+set(pp,'LineWidth',1.25,'MarkerSize',8);
+set(xl,'FontSize',18);
+set(yl,'FontSize',18);
+% set(ll,'FontSize',18,'Interpreter','LaTeX');
+set(gca,'FontSize',16,'FontName','Times');
+grid on
+% set(gca, 'FontSize', fontSize, 'FontName', font);
+set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
+set(gcf,'Position', figScreenPosition);
+set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
+    'PaperSize', figScreenPosition(3:4));
+if savePlotData == true
+    % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
+end
+
+figure(14)
+pp = plot(t, s,'-o');
+xl = xlabel('$t$','Interpreter','LaTeX');
+yl = ylabel('$s$','Interpreter','LaTeX');
+% ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
+set(pp,'LineWidth',1.25,'MarkerSize',8);
+set(xl,'FontSize',18);
+set(yl,'FontSize',18);
+% set(ll,'FontSize',18,'Interpreter','LaTeX');
+set(gca,'FontSize',16,'FontName','Times');
+grid on
+% set(gca, 'FontSize', fontSize, 'FontName', font);
+set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
+set(gcf,'Position', figScreenPosition);
+set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
+    'PaperSize', figScreenPosition(3:4));
+if savePlotData == true
+    % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
+end
+
+figure(15)
+pp = plot(t, v, t, vs,'-o');
+xl = xlabel('$t$','Interpreter','LaTeX');
+yl = ylabel('$v$','Interpreter','LaTeX');
+% ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
+set(pp,'LineWidth',1.25,'MarkerSize',8);
+set(xl,'FontSize',18);
+set(yl,'FontSize',18);
+% set(ll,'FontSize',18,'Interpreter','LaTeX');
+set(gca,'FontSize',16,'FontName','Times');
+grid on
+% set(gca, 'FontSize', fontSize, 'FontName', font);
+set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
+set(gcf,'Position', figScreenPosition);
+set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
+    'PaperSize', figScreenPosition(3:4));
+if savePlotData == true
+    % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
+end
+
+figure(16)
+pp = plot(x, v, x, vs,'-o');
 xl = xlabel('$x$','Interpreter','LaTeX');
-yl = ylabel('yTop','Interpreter','LaTeX');
+yl = ylabel('$v$','Interpreter','LaTeX');
 % ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
-% set(ll,'FontSize',18,'Interpreter','LaTeX');
 set(pp,'LineWidth',1.25,'MarkerSize',8);
 set(xl,'FontSize',18);
 set(yl,'FontSize',18);
-set(gca,'FontSize',16,'FontName','Times');
-grid on
-% set(gca, 'FontSize', fontSize, 'FontName', font);
-set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
-set(gcf,'Position', figScreenPosition);
-set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
-    'PaperSize', figScreenPosition(3:4));
-if savePlotData == true
-    % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
-end
-
-figure
-pp = plot(s_test, xRight_test);
-xl = xlabel('$s$','Interpreter','LaTeX');
-yl = ylabel('xRight','Interpreter','LaTeX');
-% ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
 % set(ll,'FontSize',18,'Interpreter','LaTeX');
-set(pp,'LineWidth',1.25,'MarkerSize',8);
-set(xl,'FontSize',18);
-set(yl,'FontSize',18);
-set(gca,'FontSize',16,'FontName','Times');
-grid on
-% set(gca, 'FontSize', fontSize, 'FontName', font);
-set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
-set(gcf,'Position', figScreenPosition);
-set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
-    'PaperSize', figScreenPosition(3:4));
-if savePlotData == true
-    % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
-end
-
-figure
-pp = plot(s_test, yTop_test);
-xl = xlabel('$s$','Interpreter','LaTeX');
-yl = ylabel('yTop','Interpreter','LaTeX');
-% ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
-% set(ll,'FontSize',18,'Interpreter','LaTeX');
-set(pp,'LineWidth',1.25,'MarkerSize',8);
-set(xl,'FontSize',18);
-set(yl,'FontSize',18);
 set(gca,'FontSize',16,'FontName','Times');
 grid on
 % set(gca, 'FontSize', fontSize, 'FontName', font);
