@@ -15,6 +15,7 @@ else
     % [r, c];
     try
     cell = Maze(r+1, c+1);
+    % cellnr = MazeOrder{r+1, c+1}(1);
     s = MazeOrder{r+1, c+1}(2); % Displacement thus far to get to the current cell
     if (cell == "R") || (cell == "L") || (cell == "U") || (cell == "D")
         switch cell
