@@ -93,16 +93,16 @@ Flmin = -MaxForce; Flmax = MaxForce; % Left wheel limits
 %-------------------------------------------------------------------------%
 %----------------------- Setup for Problem Bounds ------------------------%
 %-------------------------------------------------------------------------%
-bounds.phase.initialtime.lower = t0; 
-bounds.phase.initialtime.upper = t0;
-bounds.phase.finaltime.lower = tfmin; 
-bounds.phase.finaltime.upper = tfmax;
-bounds.phase.initialstate.lower = [v0,theta0,x0,y0,omega0]; 
-bounds.phase.initialstate.upper = [v0,theta0,x0,y0,omega0]; 
-bounds.phase.state.lower = [vmin,thetamin,xmin,ymin,omegamin]; 
-bounds.phase.state.upper = [vmax,thetamax,xmax,ymax,omegamax]; 
-bounds.phase.finalstate.lower = [vmin,thetamin,xf,yf,omegamin]; 
-bounds.phase.finalstate.upper = [vmax,thetamax,xf,yf,omegamax]; 
+bounds.phase.initialtime.lower = s0; 
+bounds.phase.initialtime.upper = s0;
+bounds.phase.finaltime.lower = s0; 
+bounds.phase.finaltime.upper = smax;
+bounds.phase.initialstate.lower = [v0,theta0,x0,y0,omega0,t0]; 
+bounds.phase.initialstate.upper = [v0,theta0,x0,y0,omega0,t0]; 
+bounds.phase.state.lower = [vmin,thetamin,xmin,ymin,omegamin,t0]; 
+bounds.phase.state.upper = [vmax,thetamax,xmax,ymax,omegamax,tfmax]; 
+bounds.phase.finalstate.lower = [vmin,thetamin,xf,yf,omegamin,t0]; 
+bounds.phase.finalstate.upper = [vmax,thetamax,xf,yf,omegamax,tfmax]; 
 bounds.phase.control.lower = [Frmin, Flmin]; 
 bounds.phase.control.upper = [Frmax, Flmax];
 
@@ -128,7 +128,7 @@ bounds.phase.path.upper = upperPathBounds;
 % guess.phase.time    = [t0; tfmax];
 guess.phase.time    = [s0; smax]; % The independent variable is now s (center line displacement)
 guess.phase.state   = [[v0; vmax], [theta0; 0], [x0; xf], ...
-    [y0; yf], [omega0; omega0]];
+    [y0; yf], [omega0; omega0], [t0; tfmax]];
 guess.phase.control = [[Frmax; Frmax],[Flmax; Flmax]];
 guess.phase.integral = 2.5;
 

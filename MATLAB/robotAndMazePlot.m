@@ -7,6 +7,8 @@ v = solution.phase(1).state(:,1);
 theta = solution.phase(1).state(:,2);
 x = solution.phase(1).state(:,3);
 y = solution.phase(1).state(:,4);
+omega = solution.phase(1).state(:,5);
+t = solution.phase(1).state(:,6);
 xDot = v.*cos(theta);
 yDot = v.*sin(theta);
 
@@ -19,15 +21,15 @@ for i = 1:N
         Maze, MazeOrder, Wc);
 end
 
-t = (1./vs).*s;
+% t = (1./vs).*s;
 
 figure(25)
 plot(t, vs);
 % plot(t, s);
 
 figure(1)
-pp = plot(solution.phase(1).time, solution.phase(1).state(:,3:4),'-o', ...
-    solution.phase(1).time, solution.phase(1).state(:,1),'-o');
+pp = plot(t, solution.phase(1).state(:,3:4),'-o', ...
+    t, solution.phase(1).state(:,1),'-o');
 xl = xlabel('$t$','Interpreter','LaTeX');
 yl = ylabel('$(x(t),y(t),v(t))$','Interpreter','LaTeX');
 ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
@@ -48,7 +50,7 @@ end
 % print -dpng robotAndMazeState.png
 
 figure(2)
-pp = plot(solution.phase(1).time, solution.phase(1).state(:,2),'-o');
+pp = plot(t, solution.phase(1).state(:,2),'-o');
 xl = xlabel('$t$','Interpreter','LaTeX');
 yl = ylabel('$\theta(t)$','Interpreter','LaTeX');
 set(pp,'LineWidth',1.25,'MarkerSize',8);
@@ -66,7 +68,7 @@ if savePlotData == true
 end
 
 figure(3)
-pp = plot(solution.phase(1).time,solution.phase(1).control,'-o');
+pp = plot(t,solution.phase(1).control,'-o');
 xl = xlabel('$t$','Interpreter','LaTeX');
 yl = ylabel('$u(t)$','Interpreter','LaTeX');
 ll = legend('$F_R(t)$','$F_L(t)$','Location','NorthWest');
@@ -111,7 +113,7 @@ if savePlotData == true
 end
 
 figure(5)
-pp = plot(solution.phase(1).time,solution.phase(1).state(:,5),'-o');
+pp = plot(t,solution.phase(1).state(:,5),'-o');
 xl = xlabel('$t$','Interpreter','LaTeX');
 yl = ylabel('$\omega(t)$','Interpreter','LaTeX');
 set(pp,'LineWidth',1.25,'MarkerSize',8);

@@ -33,13 +33,13 @@ for i = 1:N
 end
 
 x_prime = (1./vs).*[vDot, thetaDot, xDot, yDot, omegaDot];
+t_prime = (1./vs).*ones(N,1);
 
 
-phaseout.dynamics = x_prime;
+phaseout.dynamics = [x_prime, t_prime];
 phaseout.integrand = (1./vs);
 
 if input.auxdata.pathConstraintsActive
-
     phaseout.path = d;
 end
 
