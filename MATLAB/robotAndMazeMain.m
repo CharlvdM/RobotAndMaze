@@ -16,8 +16,11 @@ BASIC_MAZE = 2;
 % Now we attempt the same simulation, but where the dynamics are redefined
 % so that the independent variable is "s", the center line displacement.
 BASIC_MAZE_PRIME = 3;
+% This maze is truncated to the bottom two rows. This is much easier to
+% solve it seems
+BASIC_MAZE_SIMPLIFIED = 4;
 
-sim = BASIC_MAZE;
+sim = BASIC_MAZE_SIMPLIFIED;
 
 Wc = 1; % Maze cell width
 Maze = ["R", "ANW", "ANE", "ANW";
@@ -59,7 +62,13 @@ switch sim
         pathConstraintsActive = true;
         primeDynamicsUsed = false;
         tfmin = 0; tfmax = 3;                  % time boundary
-        xf = 2.5; yf = 1.3;                    % final state
+        % xf = 2.5; yf = 1.3;                    % final state
+        % Final states for which GPOPS can't compute a solution from the
+        % current setup:
+        Maze = ["R", "ANW", "ANE", "ANW";
+        "CNW", "CSE", "CSW", "U"];
+        ymin = 0; ymax = 2;
+        xf = 3.5; yf = 1.5;                    % final state
         % xf = 2.5; yf = 1.1;                    % can't solve for this final state
     case BASIC_MAZE_PRIME
         pathConstraintsActive = true;
@@ -70,6 +79,14 @@ switch sim
         s0 = 0;
         sfmin = 2;
         sfmax = 3;
+    case BASIC_MAZE_SIMPLIFIED
+        pathConstraintsActive = true;
+        primeDynamicsUsed = false;
+        tfmin = 0; tfmax = 3;                  % time boundary
+        Maze = ["R", "ANW", "ANE", "ANW";
+        "CNW", "CSE", "CSW", "U"];
+        ymin = 0; ymax = 2;
+        xf = 3.5; yf = 1.5;                    % final state
     otherwise
 end
 
