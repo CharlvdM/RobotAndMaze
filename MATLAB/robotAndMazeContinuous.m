@@ -33,7 +33,7 @@ for i = 1:N
 end
 
 x_prime = (1./vs).*[vDot, thetaDot, xDot, yDot, omegaDot];
-t_prime = (1./vs).*ones(N,1);
+t_prime = (1./vs);
 
 
 phaseout.dynamics = [x_prime, t_prime];

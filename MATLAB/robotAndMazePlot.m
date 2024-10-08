@@ -25,7 +25,8 @@ end
 
 figure(25)
 plot(t, vs);
-% plot(t, s);
+figure(26)
+plot(t, s);
 
 figure(1)
 pp = plot(t, solution.phase(1).state(:,3:4),'-o', ...

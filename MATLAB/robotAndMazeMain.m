@@ -72,6 +72,7 @@ tfmin = 0; tfmax = 5;                              % time boundary
 v0 = 0; theta0 = 0; x0 = 0.5; y0 = 0.5; omega0 = 0; % initial state
 % thetatf = 0; xf = 2.5; yf = 1.5;                    % final state
 xf = 2.5; yf = 1.4;                    % final state
+% xf = 1; yf = 0.5;                    % final state
 % thetatf = 0; xf = 3.5; yf = 0.5;                    % final state
 % vmin = -16.5; vmax = 16.5;
 vmin = 0; vmax = 16.5;
@@ -81,7 +82,8 @@ ymin = 0; ymax = 3;
 omegamin = -20; omegamax = 20; % Angular rate (rad/s) limit
 
 s0 = 0;
-smax = 3;
+sfmin = 2;
+sfmax = 3;
 
 % motorMaxTorue = 20;
 motorMaxTorue = 0.6; % Equates to a max force of 20 N per motor
@@ -95,19 +97,20 @@ Flmin = -MaxForce; Flmax = MaxForce; % Left wheel limits
 %-------------------------------------------------------------------------%
 bounds.phase.initialtime.lower = s0; 
 bounds.phase.initialtime.upper = s0;
-bounds.phase.finaltime.lower = s0; 
-bounds.phase.finaltime.upper = smax;
+bounds.phase.finaltime.lower = sfmin; 
+bounds.phase.finaltime.upper = sfmax;
 bounds.phase.initialstate.lower = [v0,theta0,x0,y0,omega0,t0]; 
 bounds.phase.initialstate.upper = [v0,theta0,x0,y0,omega0,t0]; 
 bounds.phase.state.lower = [vmin,thetamin,xmin,ymin,omegamin,t0]; 
 bounds.phase.state.upper = [vmax,thetamax,xmax,ymax,omegamax,tfmax]; 
-bounds.phase.finalstate.lower = [vmin,thetamin,xf,yf,omegamin,t0]; 
+bounds.phase.finalstate.lower = [vmin,thetamin,xf,yf,omegamin,tfmin]; 
 bounds.phase.finalstate.upper = [vmax,thetamax,xf,yf,omegamax,tfmax]; 
 bounds.phase.control.lower = [Frmin, Flmin]; 
 bounds.phase.control.upper = [Frmax, Flmax];
 
-bounds.phase.integral.lower = 0;
-bounds.phase.integral.upper = smax;
+% The result of the integral is time
+bounds.phase.integral.lower = tfmin;
+bounds.phase.integral.upper = tfmax;
 
 % Assuming you have 4 path constraints (xLeft, xRight, yBottom, yTop)
 % lowerPathBounds = [0, 0, 0, 0];  % Path constraint lower bounds (>= 0)
@@ -126,11 +129,11 @@ bounds.phase.path.upper = upperPathBounds;
 %---------------------- Provide Guess of Solution ------------------------%
 %-------------------------------------------------------------------------%
 % guess.phase.time    = [t0; tfmax];
-guess.phase.time    = [s0; smax]; % The independent variable is now s (center line displacement)
-guess.phase.state   = [[v0; vmax], [theta0; 0], [x0; xf], ...
+guess.phase.time    = [s0; sfmax]; % The independent variable is now s (center line displacement)
+guess.phase.state   = [[v0; vmax], [theta0; theta0], [x0; xf], ...
     [y0; yf], [omega0; omega0], [t0; tfmax]];
 guess.phase.control = [[Frmax; Frmax],[Flmax; Flmax]];
-guess.phase.integral = 2.5;
+guess.phase.integral = 2.5; % guess the final time
 
 %-------------------------------------------------------------------------%
 %----------Provide Mesh Refinement Method and Initial Mesh ---------------%
