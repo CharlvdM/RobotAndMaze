@@ -20,7 +20,7 @@ BASIC_MAZE_PRIME = 3;
 % solve it seems
 BASIC_MAZE_SIMPLIFIED = 4;
 
-sim = BASIC_MAZE_SIMPLIFIED;
+sim = BASIC_MAZE;
 
 Wc = 1; % Maze cell width
 Maze = ["R", "ANW", "ANE", "ANW";
@@ -40,8 +40,9 @@ wheelRadius = 0.03;
 MaxForce = motorMaxTorue / wheelRadius;
 Frmin = -MaxForce; Frmax = MaxForce; % Right wheel limits
 Flmin = -MaxForce; Flmax = MaxForce; % Left wheel limits
-FrDotMax = 10;
-FlDotMax = 10;
+F_DotMax = 500;
+FrDotMax = F_DotMax;
+FlDotMax = F_DotMax;
 
 t0 = 0;                                             % initial time
 v0 = 0; theta0 = 0; x0 = 0.5; y0 = 0.5; omega0 = 0; % initial state
@@ -67,11 +68,7 @@ switch sim
         % xf = 2.5; yf = 1.3;                    % final state
         % Final states for which GPOPS can't compute a solution from the
         % current setup:
-        Maze = ["R", "ANW", "ANE", "ANW";
-        "CNW", "CSE", "CSW", "U"];
-        ymin = 0; ymax = 2;
         xf = 3.5; yf = 1.5;                    % final state
-        % xf = 2.5; yf = 1.1;                    % can't solve for this final state
     case BASIC_MAZE_PRIME
         pathConstraintsActive = true;
         primeDynamicsUsed = true;

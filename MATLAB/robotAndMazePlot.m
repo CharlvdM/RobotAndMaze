@@ -142,8 +142,9 @@ set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
     'PaperSize', figScreenPosition(3:4));
 
 
+nLim = 0.5*Wc - rRobot;
 figure(12)
-pp = plot(x, d,'-o', [x(1), x(end)], [0.5*Wc - rRobot, 0.5*Wc - rRobot], 'k');
+pp = plot(x, d,'-o', [xmin,xmax],[nLim, nLim],'k', [xmin,xmax],[-nLim, -nLim],'k');
 xl = xlabel('$x$','Interpreter','LaTeX');
 yl = ylabel('$d$','Interpreter','LaTeX');
 % ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
@@ -163,7 +164,7 @@ if savePlotData == true
 end
 
 figure(13)
-pp = plot(t, d,'-o', [t(1), t(end)], [0.5*Wc - rRobot, 0.5*Wc - rRobot], 'k');
+pp = plot(t, d,'-o', [t(1),t(end)],[nLim, nLim],'k', [t(1),t(end)],[-nLim, -nLim],'k');
 xl = xlabel('$t$','Interpreter','LaTeX');
 yl = ylabel('$d$','Interpreter','LaTeX');
 % ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
