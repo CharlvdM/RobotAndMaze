@@ -12,8 +12,10 @@ theta             = input.phase.state(:,2);
 x                 = input.phase.state(:,3);
 y                 = input.phase.state(:,4);
 omega             = input.phase.state(:,5);
-Fr                = input.phase.control(:,1);
-Fl                = input.phase.control(:,2);
+Fr                = input.phase.state(:,6);
+Fl                = input.phase.state(:,7);
+FrDot             = input.phase.control(:,1);
+FlDot             = input.phase.control(:,2);
 vDot              = (1/m)*(Fr+Fl);
 thetaDot          = omega;
 xDot              = v.*cos(theta);
@@ -35,7 +37,7 @@ if input.auxdata.primeDynamicsUsed
     phaseout.dynamics = [x_prime, t_prime];
     phaseout.integrand = (1./vs);
 else
-    phaseout.dynamics = [vDot, thetaDot, xDot, yDot, omegaDot];
+    phaseout.dynamics = [vDot, thetaDot, xDot, yDot, omegaDot, FrDot, FlDot];
 end
 
 if input.auxdata.pathConstraintsActive

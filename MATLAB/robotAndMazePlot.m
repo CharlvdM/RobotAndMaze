@@ -7,6 +7,10 @@ theta = solution.phase(1).state(:,2);
 x = solution.phase(1).state(:,3);
 y = solution.phase(1).state(:,4);
 omega = solution.phase(1).state(:,5);
+Fr = solution.phase(1).state(:,6);
+Fl = solution.phase(1).state(:,7);
+FrDot = solution.phase(1).control(:,1);
+FlDot = solution.phase(1).control(:,1);
 xDot = v.*cos(theta);
 yDot = v.*sin(theta);
 if primeDynamicsUsed
@@ -78,7 +82,7 @@ if savePlotData == true
 end
 
 figure(3)
-pp = plot(t,solution.phase(1).control,'-o');
+pp = plot(t,Fr,'-o', t,Fl,'-o');
 xl = xlabel('$t$','Interpreter','LaTeX');
 yl = ylabel('$u(t)$','Interpreter','LaTeX');
 ll = legend('$F_R(t)$','$F_L(t)$','Location','NorthWest');

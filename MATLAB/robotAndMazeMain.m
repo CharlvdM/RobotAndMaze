@@ -40,6 +40,8 @@ wheelRadius = 0.03;
 MaxForce = motorMaxTorue / wheelRadius;
 Frmin = -MaxForce; Frmax = MaxForce; % Right wheel limits
 Flmin = -MaxForce; Flmax = MaxForce; % Left wheel limits
+FrDotMax = 10;
+FlDotMax = 10;
 
 t0 = 0;                                             % initial time
 v0 = 0; theta0 = 0; x0 = 0.5; y0 = 0.5; omega0 = 0; % initial state
@@ -107,15 +109,14 @@ if primeDynamicsUsed
     bounds.phase.initialtime.upper = s0;
     bounds.phase.finaltime.lower = sfmin; 
     bounds.phase.finaltime.upper = sfmax;
-    bounds.phase.initialstate.lower = [v0,theta0,x0,y0,omega0,t0]; 
-    bounds.phase.initialstate.upper = [v0,theta0,x0,y0,omega0,t0]; 
-    bounds.phase.state.lower = [vmin,thetamin,xmin,ymin,omegamin,t0]; 
-    bounds.phase.state.upper = [vmax,thetamax,xmax,ymax,omegamax,tfmax]; 
-    bounds.phase.finalstate.lower = [vmin,thetafmin,xf,yf,omegamin,tfmin]; 
-    bounds.phase.finalstate.upper = [vmax,thetafmax,xf,yf,omegamax,tfmax]; 
-    bounds.phase.control.lower = [Frmin, Flmin]; 
-    bounds.phase.control.upper = [Frmax, Flmax];
-    
+bounds.phase.initialstate.lower = [v0,theta0,x0,y0,omega0,t0,Frmin,Flmin]; 
+bounds.phase.initialstate.upper = [v0,theta0,x0,y0,omega0,t0,Frmax,Flmax]; 
+bounds.phase.state.lower = [vmin,thetamin,xmin,ymin,omegamin,t0,Frmin,Flmin]; 
+bounds.phase.state.upper = [vmax,thetamax,xmax,ymax,omegamax,tfmax,Frmax,Flmax]; 
+bounds.phase.finalstate.lower = [vmin,thetafmin,xf,yf,omegamin,tfmin,Frmin,Flmin]; 
+bounds.phase.finalstate.upper = [vmax,thetafmax,xf,yf,omegamax,tfmax,Frmax,Flmax]; 
+bounds.phase.control.lower = [-FrDotMax, -FlDotMax]; 
+bounds.phase.control.upper = [FrDotMax, FrDotMax];
     % The result of the integral is time
     bounds.phase.integral.lower = tfmin;
     bounds.phase.integral.upper = tfmax;
@@ -124,14 +125,14 @@ else
     bounds.phase.initialtime.upper = t0;
     bounds.phase.finaltime.lower = tfmin; 
     bounds.phase.finaltime.upper = tfmax;
-    bounds.phase.initialstate.lower = [v0,theta0,x0,y0,omega0]; 
-    bounds.phase.initialstate.upper = [v0,theta0,x0,y0,omega0]; 
-    bounds.phase.state.lower = [vmin,thetamin,xmin,ymin,omegamin]; 
-    bounds.phase.state.upper = [vmax,thetamax,xmax,ymax,omegamax]; 
-    bounds.phase.finalstate.lower = [vmin,thetafmin,xf,yf,omegamin]; 
-    bounds.phase.finalstate.upper = [vmax,thetafmax,xf,yf,omegamax]; 
-    bounds.phase.control.lower = [Frmin, Flmin]; 
-    bounds.phase.control.upper = [Frmax, Flmax];
+    bounds.phase.initialstate.lower = [v0,theta0,x0,y0,omega0,Frmin,Flmin]; 
+    bounds.phase.initialstate.upper = [v0,theta0,x0,y0,omega0,Frmax,Flmax]; 
+    bounds.phase.state.lower = [vmin,thetamin,xmin,ymin,omegamin,Frmin,Flmin]; 
+    bounds.phase.state.upper = [vmax,thetamax,xmax,ymax,omegamax,Frmax,Flmax]; 
+    bounds.phase.finalstate.lower = [vmin,thetafmin,xf,yf,omegamin,Frmin,Flmin]; 
+    bounds.phase.finalstate.upper = [vmax,thetafmax,xf,yf,omegamax,Frmax,Flmax]; 
+    bounds.phase.control.lower = [-FrDotMax, -FlDotMax]; 
+    bounds.phase.control.upper = [FrDotMax, FrDotMax];
 end
 
 if pathConstraintsActive
@@ -149,14 +150,14 @@ end
 if primeDynamicsUsed
     guess.phase.time    = [s0; sfmax]; % The independent variable is now s (center line displacement)
     guess.phase.state   = [[v0; vmax], [theta0; theta0], [x0; xf], ...
-        [y0; yf], [omega0; omega0], [t0; tfmax]];
-    guess.phase.control = [[Frmax; Frmax],[Flmax; Flmax]];
+        [y0; yf], [omega0; omega0], [t0; tfmax], [Frmax; Frmax], [Flmax; Flmax]];
+    guess.phase.control = [[0; 0],[0; 0]];
     guess.phase.integral = tfmax; % guess the final time
 else
     guess.phase.time    = [t0; tfmax];
     guess.phase.state   = [[v0; vmax], [theta0; theta0], [x0; xf], ...
-        [y0; yf], [omega0; omega0]];
-    guess.phase.control = [[Frmax; Frmax],[Flmax; Flmax]];
+        [y0; yf], [omega0; omega0], [Frmax; Frmax], [Flmax; Flmax]];
+    guess.phase.control = [[0; 0],[0; 0]];
 end
 
 %-------------------------------------------------------------------------%
