@@ -3,10 +3,13 @@
 %-------------------------------------------%
 function output = robotAndMazeEndpoint(input)
 
-% output.objective = input.phase(1).finaltime;
+if input.auxdata.primeDynamicsUsed
+    q = input.phase.integral;
+    output.objective = q;
+else
+    output.objective = input.phase(1).finaltime;
+end
 
-q = input.phase.integral;
-output.objective = q;
 
 %-------------------------------------------%
 % END: function brachistochroneEndpoint.m   %

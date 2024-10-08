@@ -2,31 +2,40 @@ savePlotData = false;
 figDirectory = '../Latex/Figures/';
 figScreenPosition = [5 5 15 9];
 
-s = solution.phase(1).time;
 v = solution.phase(1).state(:,1);
 theta = solution.phase(1).state(:,2);
 x = solution.phase(1).state(:,3);
 y = solution.phase(1).state(:,4);
 omega = solution.phase(1).state(:,5);
-t = solution.phase(1).state(:,6);
 xDot = v.*cos(theta);
 yDot = v.*sin(theta);
-
-N = size(x,1);
-d = zeros(N,1);
-% s = zeros(N,1);
-vs = zeros(N,1);
-for i = 1:N
-    [d(i), ~, vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), ...
-        Maze, MazeOrder, Wc);
+if primeDynamicsUsed
+    s = solution.phase(1).time;
+    t = solution.phase(1).state(:,6);
+    N = size(x,1);
+    d = zeros(N,1);
+    % s = zeros(N,1);
+    vs = zeros(N,1);
+    for i = 1:N
+        [d(i), ~, vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), ...
+            Maze, MazeOrder, Wc);
+    end
+else
+    t = solution.phase(1).time;
+    N = size(x,1);
+    d = zeros(N,1);
+    s = zeros(N,1);
+    vs = zeros(N,1);
+    for i = 1:N
+        [d(i), s(i), vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), ...
+            Maze, MazeOrder, Wc);
+    end
 end
 
-% t = (1./vs).*s;
-
-figure(25)
-plot(t, vs);
-figure(26)
-plot(t, s);
+% figure(25)
+% plot(t, vs);
+% figure(26)
+% plot(t, s);
 
 figure(1)
 pp = plot(t, solution.phase(1).state(:,3:4),'-o', ...
@@ -127,3 +136,90 @@ set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
 set(gcf,'Position', figScreenPosition);
 set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
     'PaperSize', figScreenPosition(3:4));
+
+
+figure(12)
+pp = plot(x, d,'-o', [x(1), x(end)], [0.5*Wc - rRobot, 0.5*Wc - rRobot], 'k');
+xl = xlabel('$x$','Interpreter','LaTeX');
+yl = ylabel('$d$','Interpreter','LaTeX');
+% ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
+set(pp,'LineWidth',1.25,'MarkerSize',8);
+set(xl,'FontSize',18);
+set(yl,'FontSize',18);
+% set(ll,'FontSize',18,'Interpreter','LaTeX');
+set(gca,'FontSize',16,'FontName','Times');
+grid on
+% set(gca, 'FontSize', fontSize, 'FontName', font);
+set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
+set(gcf,'Position', figScreenPosition);
+set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
+    'PaperSize', figScreenPosition(3:4));
+if savePlotData == true
+    % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
+end
+
+figure(13)
+pp = plot(t, d,'-o', [t(1), t(end)], [0.5*Wc - rRobot, 0.5*Wc - rRobot], 'k');
+xl = xlabel('$t$','Interpreter','LaTeX');
+yl = ylabel('$d$','Interpreter','LaTeX');
+% ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
+set(pp,'LineWidth',1.25,'MarkerSize',8);
+set(xl,'FontSize',18);
+set(yl,'FontSize',18);
+% set(ll,'FontSize',18,'Interpreter','LaTeX');
+set(gca,'FontSize',16,'FontName','Times');
+grid on
+% set(gca, 'FontSize', fontSize, 'FontName', font);
+set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
+set(gcf,'Position', figScreenPosition);
+set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
+    'PaperSize', figScreenPosition(3:4));
+if savePlotData == true
+    % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
+end
+
+figure(14)
+pp = plot(t, s,'-o');
+xl = xlabel('$t$','Interpreter','LaTeX');
+yl = ylabel('$s$','Interpreter','LaTeX');
+% ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
+set(pp,'LineWidth',1.25,'MarkerSize',8);
+set(xl,'FontSize',18);
+set(yl,'FontSize',18);
+% set(ll,'FontSize',18,'Interpreter','LaTeX');
+set(gca,'FontSize',16,'FontName','Times');
+grid on
+% set(gca, 'FontSize', fontSize, 'FontName', font);
+set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
+set(gcf,'Position', figScreenPosition);
+set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
+    'PaperSize', figScreenPosition(3:4));
+if savePlotData == true
+    % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
+end
+
+dt = diff(t);       % Differences in time (dt)
+ds = diff(s);       % Differences in displacement (ds)
+% vs = ds ./ dt;      % Element-wise division to get velocity
+% vs = [0; ds ./ dt];
+vs_calc = [ds(1) ./ dt(1); (ds(1:end-1) + ds(2:end)) ./ (dt(1:end-1) + dt(2:end)); ds(end) ./ dt(end)];
+
+figure(15)
+pp = plot(t, v, t, vs,'-o', t, vs_calc);
+xl = xlabel('$t$','Interpreter','LaTeX');
+yl = ylabel('$v$','Interpreter','LaTeX');
+ll = legend('$v(t)$','$v_s(t)$','$v_\mathrm{calc}(t)$','Location','NorthWest');
+set(pp,'LineWidth',1.25,'MarkerSize',8);
+set(xl,'FontSize',18);
+set(yl,'FontSize',18);
+set(ll,'FontSize',18,'Interpreter','LaTeX');
+set(gca,'FontSize',16,'FontName','Times');
+grid on
+% set(gca, 'FontSize', fontSize, 'FontName', font);
+set(gcf, 'PaperUnits', 'centimeters', 'Units', 'centimeters')
+set(gcf,'Position', figScreenPosition);
+set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
+    'PaperSize', figScreenPosition(3:4));
+if savePlotData == true
+    % print(gcf, '-dpdf', '-painters', strcat(figDirectory, 'States'))
+end

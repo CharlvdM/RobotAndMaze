@@ -19,25 +19,24 @@ thetaDot          = omega;
 xDot              = v.*cos(theta);
 yDot              = v.*sin(theta);
 omegaDot          = (1/I)*w*(Fr-Fl);
-% phaseout.dynamics = [vDot, thetaDot, xDot, yDot, omegaDot];
 
 N = size(x,1);
 d = zeros(N,1);
-s = zeros(N,1);
 vs = zeros(N,1);
 for i = 1:N
-    % [~, ~, d(i)] = centerLineDisplacement(x(i), y(i), ...
-    %     input.auxdata.Maze, input.auxdata.MazeOrder, input.auxdata.Wc);
-    [d(i), s(i), vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), ...
-        input.auxdata.Maze, input.auxdata.MazeOrder, input.auxdata.Wc);
+    [d(i), vs(i)] = centerLineDispAndSpeed(x(i), y(i), xDot(i), yDot(i), ...
+        input.auxdata.Maze, input.auxdata.Wc);
 end
 
-x_prime = (1./vs).*[vDot, thetaDot, xDot, yDot, omegaDot];
-t_prime = (1./vs);
-
-
-phaseout.dynamics = [x_prime, t_prime];
-phaseout.integrand = (1./vs);
+if input.auxdata.primeDynamicsUsed
+    x_prime = (1./vs).*[vDot, thetaDot, xDot, yDot, omegaDot];
+    t_prime = (1./vs);
+    
+    phaseout.dynamics = [x_prime, t_prime];
+    phaseout.integrand = (1./vs);
+else
+    phaseout.dynamics = [vDot, thetaDot, xDot, yDot, omegaDot];
+end
 
 if input.auxdata.pathConstraintsActive
     phaseout.path = d;

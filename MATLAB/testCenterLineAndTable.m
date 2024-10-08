@@ -20,21 +20,6 @@ for i = 1:N
     % [s(i), cellnr(i), ~] = centerLineDisplacement(x(i), y(i), Maze, MazeOrder, Wc);
     [d(i), s(i), vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), Maze, MazeOrder, Wc);
 end
-method = 'pchip';
-xLeft   = interp1(MazeBoundaries(:,1),MazeBoundaries(:,2),s,method);
-xRight  = interp1(MazeBoundaries(:,1),MazeBoundaries(:,3),s,method);
-yTop    = interp1(MazeBoundaries(:,1),MazeBoundaries(:,4),s,method);
-yBottom = interp1(MazeBoundaries(:,1),MazeBoundaries(:,5),s,method);
-[xLeftActual, xRightActual, yBottomActual, yTopActual] = ...
-    calcCollisionDistances(x, y, xColMatrix, yColMatrix);
-
-s_test = linspace(0, 12, 12*4);
-% method = 'pchip';
-method = 'splin';
-xLeft_test   = interp1(MazeBoundaries(:,1),MazeBoundaries(:,2),s_test,method);
-xRight_test  = interp1(MazeBoundaries(:,1),MazeBoundaries(:,3),s_test,method);
-yTop_test    = interp1(MazeBoundaries(:,1),MazeBoundaries(:,4),s_test,method);
-yBottom_test = interp1(MazeBoundaries(:,1),MazeBoundaries(:,5),s_test,method);
 
 figure(6)
 pp = plot(x, s,'-o');
