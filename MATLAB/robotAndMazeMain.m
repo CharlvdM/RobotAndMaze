@@ -20,7 +20,7 @@ BASIC_MAZE_PRIME = 3;
 % solve it seems
 BASIC_MAZE_SIMPLIFIED = 4;
 
-sim = BASIC_MAZE;
+sim = BASIC_MAZE_PRIME;
 
 Wc = 1; % Maze cell width
 Maze = ["R", "ANW", "ANE", "ANW";
@@ -64,11 +64,17 @@ switch sim
     case BASIC_MAZE
         pathConstraintsActive = true;
         primeDynamicsUsed = false;
-        tfmin = 0; tfmax = 3;                  % time boundary
-        % xf = 2.5; yf = 1.3;                    % final state
-        % Final states for which GPOPS can't compute a solution from the
-        % current setup:
-        xf = 3.5; yf = 1.5;                    % final state
+        tfmin = 0; tfmax = 3;   % time boundary
+        % xf = 2.5; yf = 1.3;   % final state
+        % More complex final states
+        xf = 3.5; yf = 1.5;     % can be solved
+        % xf = 3.5; yf = 2.5;   % can't be solved currently
+
+        % thetamin = 0; thetamax = 3*pi/4;
+        % thetafmin = thetamin; thetafmax = thetamax;
+        % v0 = 0; theta0 = pi/2; x0 = 3.5; y0 = 0.5; omega0 = 0; % initial state
+        % % xf = 3.5; yf = 2.5;     % can be solved
+        % xf = 1.5; yf = 2.5;     % can't be solved
     case BASIC_MAZE_PRIME
         pathConstraintsActive = true;
         primeDynamicsUsed = true;
@@ -77,7 +83,7 @@ switch sim
         
         s0 = 0;
         sfmin = 2;
-        sfmax = 3;
+        sfmax = 3.5;
     case BASIC_MAZE_SIMPLIFIED
         pathConstraintsActive = true;
         primeDynamicsUsed = false;
@@ -106,14 +112,14 @@ if primeDynamicsUsed
     bounds.phase.initialtime.upper = s0;
     bounds.phase.finaltime.lower = sfmin; 
     bounds.phase.finaltime.upper = sfmax;
-bounds.phase.initialstate.lower = [v0,theta0,x0,y0,omega0,t0,Frmin,Flmin]; 
-bounds.phase.initialstate.upper = [v0,theta0,x0,y0,omega0,t0,Frmax,Flmax]; 
-bounds.phase.state.lower = [vmin,thetamin,xmin,ymin,omegamin,t0,Frmin,Flmin]; 
-bounds.phase.state.upper = [vmax,thetamax,xmax,ymax,omegamax,tfmax,Frmax,Flmax]; 
-bounds.phase.finalstate.lower = [vmin,thetafmin,xf,yf,omegamin,tfmin,Frmin,Flmin]; 
-bounds.phase.finalstate.upper = [vmax,thetafmax,xf,yf,omegamax,tfmax,Frmax,Flmax]; 
-bounds.phase.control.lower = [-FrDotMax, -FlDotMax]; 
-bounds.phase.control.upper = [FrDotMax, FrDotMax];
+    bounds.phase.initialstate.lower = [v0,theta0,x0,y0,omega0,Frmin,Flmin,t0]; 
+    bounds.phase.initialstate.upper = [v0,theta0,x0,y0,omega0,Frmax,Flmax,t0]; 
+    bounds.phase.state.lower = [vmin,thetamin,xmin,ymin,omegamin,Frmin,Flmin,t0]; 
+    bounds.phase.state.upper = [vmax,thetamax,xmax,ymax,omegamax,Frmax,Flmax,tfmax]; 
+    bounds.phase.finalstate.lower = [vmin,thetafmin,xf,yf,omegamin,Frmin,Flmin,tfmin]; 
+    bounds.phase.finalstate.upper = [vmax,thetafmax,xf,yf,omegamax,Frmax,Flmax,tfmax]; 
+    bounds.phase.control.lower = [-FrDotMax, -FlDotMax]; 
+    bounds.phase.control.upper = [FrDotMax, FrDotMax];
     % The result of the integral is time
     bounds.phase.integral.lower = tfmin;
     bounds.phase.integral.upper = tfmax;
@@ -147,7 +153,7 @@ end
 if primeDynamicsUsed
     guess.phase.time    = [s0; sfmax]; % The independent variable is now s (center line displacement)
     guess.phase.state   = [[v0; vmax], [theta0; theta0], [x0; xf], ...
-        [y0; yf], [omega0; omega0], [t0; tfmax], [Frmax; Frmax], [Flmax; Flmax]];
+        [y0; yf], [omega0; omega0], [Frmax; Frmax], [Flmax; Flmax], [t0; tfmax]];
     guess.phase.control = [[0; 0],[0; 0]];
     guess.phase.integral = tfmax; % guess the final time
 else
@@ -155,6 +161,14 @@ else
     guess.phase.state   = [[v0; vmax], [theta0; theta0], [x0; xf], ...
         [y0; yf], [omega0; omega0], [Frmax; Frmax], [Flmax; Flmax]];
     guess.phase.control = [[0; 0],[0; 0]];
+
+    % guess.phase.time    = [t0; 0.8; 1; 1.8];
+    % guess.phase.state   = [...
+    %     v0      theta0  x0      y0      omega0  Frmax   Flmax;
+    %     5       pi/2    3.5     2       3       Frmax   -Flmax
+    %     7       pi      3       2.5     6       Frmax   0
+    %     vmax    pi      xf      yf      omega0  Frmax   Flmax];
+    % guess.phase.control = [[10; 0; 0; 0],[10; -10; -10; 0]];
 end
 
 %-------------------------------------------------------------------------%
