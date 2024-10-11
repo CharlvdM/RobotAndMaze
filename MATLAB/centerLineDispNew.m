@@ -21,19 +21,19 @@ else
         switch cell
             case "R"
                 d = (r+0.5)*Wc - y;
-                s = s + (x - (r*Wc));
+                s = s + (x - (c*Wc));
                 vs = xDot;
             case "L"
                 d = y - (r+0.5)*Wc;
-                s = s + ((r+1)*Wc - x);
+                s = s + ((c+1)*Wc - x);
                 vs = -xDot;
             case "U"
                 d = x - (c+0.5)*Wc;
-                s = s + (y - (c*Wc));
+                s = s + (y - (r*Wc));
                 vs = yDot;
             case "D"
                 d = (c+0.5)*Wc - x;
-                s = s + ((c+1)*Wc - y);
+                s = s + ((r+1)*Wc - y);
                 vs = -yDot;
             otherwise
                 disp('Error in centerLineDisplacement');
