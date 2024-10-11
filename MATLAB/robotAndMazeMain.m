@@ -19,8 +19,12 @@ BASIC_MAZE_PRIME = 3;
 % This maze is truncated to the bottom two rows. This is much easier to
 % solve it seems
 BASIC_MAZE_SIMPLIFIED = 4;
+% I believe the problem with the prime dynamics is that the speed and path
+% constraint isn't well defined everywhere for the maze. It can jump
+% discretely between cells.
+CIRCULAR_TRACK = 5;
 
-sim = BASIC_MAZE_PRIME;
+sim = CIRCULAR_TRACK;
 
 Wc = 1; % Maze cell width
 Maze = ["R", "ANW", "ANE", "ANW";
@@ -30,10 +34,10 @@ MazeOrder = {[0, 0],                [1, Wc],                [4, Wc*(1+3*(pi/4))]
             [11, Wc*(4+7*(pi/4))],  [2, Wc*(1+pi/4)],       [3, Wc*(1+2*(pi/4))],   [6, Wc*(1+5*(pi/4))];
             [10, Wc*(4+6*(pi/4))],  [9, Wc*(3+6*(pi/4))],   [8, Wc*(2+6*(pi/4))],   [7, Wc*(2+5*(pi/4))]};
 
-m = 5.925;                  % Robot mass
-rRobot = 0.336/2;                   % Robot diameter
-I = 0.5*m*(rRobot^2); % Robot z axis inertia
-w = 0.13; % Distance from the wheels to robot CoG
+m = 5.925;              % Robot mass
+rRobot = 0.336/2;       % Robot diameter
+I = 0.5*m*(rRobot^2);   % Robot z axis inertia
+w = 0.13;               % Distance from the wheels to robot CoG
 
 motorMaxTorue = 0.6; % Equates to a max force of 20 N per motor
 wheelRadius = 0.03;
@@ -70,9 +74,10 @@ switch sim
         xf = 3.5; yf = 1.5;     % can be solved
         % xf = 3.5; yf = 2.5;   % can't be solved currently
 
+        % Trying to start and end in different locations.
         % thetamin = 0; thetamax = 3*pi/4;
         % thetafmin = thetamin; thetafmax = thetamax;
-        % v0 = 0; theta0 = pi/2; x0 = 3.5; y0 = 0.5; omega0 = 0; % initial state
+        % v0 = 0; theta0 = pi/2; x0 = 3.5; y0 = 0.5; omega0 = 0;
         % % xf = 3.5; yf = 2.5;     % can be solved
         % xf = 1.5; yf = 2.5;     % can't be solved
     case BASIC_MAZE_PRIME
@@ -80,7 +85,7 @@ switch sim
         primeDynamicsUsed = true;
         tfmin = 0; tfmax = 3;                  % time boundary
         xf = 2.5; yf = 1.3;                    % final state
-        
+        % Initial and final center line displacement
         s0 = 0;
         sfmin = 2;
         sfmax = 3.5;
@@ -92,9 +97,27 @@ switch sim
         "CNW", "CSE", "CSW", "U"];
         ymin = 0; ymax = 2;
         xf = 3.5; yf = 1.5;                    % final state
+    case CIRCULAR_TRACK
+        pathConstraintsActive = true;
+        primeDynamicsUsed = true;
+        tfmin = 0; tfmax = 3;                  % time boundary
+        Maze = "ASW";
+        Wc = 10;
+        rRobot = 3;
+        v0 = 1; theta0 = pi/2; x0 = 4.33; y0 = 2.5; omega0 = 0;
+        xf = 2.5; yf = 4.33;
+        xmin = 0; xmax = 10;
+        ymin = 0; ymax = 10;
+        % Initial and final center line displacement
+        s0 = 0;
+        sfmin = 2;
+        sfmax = 3.5;
     otherwise
 end
 
+auxdata.sim = sim;
+auxdata.FIRST_SIM = FIRST_SIM;
+auxdata.CIRCULAR_TRACK = CIRCULAR_TRACK;
 auxdata.pathConstraintsActive = pathConstraintsActive;
 auxdata.primeDynamicsUsed = primeDynamicsUsed;
 auxdata.Maze = Maze;

@@ -15,23 +15,23 @@ xDot = v.*cos(theta);
 yDot = v.*sin(theta);
 if primeDynamicsUsed
     s = solution.phase(1).time;
-    t = solution.phase(1).state(:,6);
+    t = solution.phase(1).state(:,8);
     N = size(x,1);
-    d = zeros(N,1);
+    n = zeros(N,1);
     % s = zeros(N,1);
     vs = zeros(N,1);
     for i = 1:N
-        [d(i), ~, vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), ...
+        [n(i), ~, vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), ...
             Maze, MazeOrder, Wc);
     end
 else
     t = solution.phase(1).time;
     N = size(x,1);
-    d = zeros(N,1);
+    n = zeros(N,1);
     s = zeros(N,1);
     vs = zeros(N,1);
     for i = 1:N
-        [d(i), s(i), vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), ...
+        [n(i), s(i), vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), ...
             Maze, MazeOrder, Wc);
     end
 end
@@ -144,9 +144,9 @@ set(gcf, 'PaperPosition', [0 0 figScreenPosition(3:4)],...
 
 nLim = 0.5*Wc - rRobot;
 figure(12)
-pp = plot(x, d,'-o', [xmin,xmax],[nLim, nLim],'k', [xmin,xmax],[-nLim, -nLim],'k');
+pp = plot(x, n,'-o', [xmin,xmax],[nLim, nLim],'k', [xmin,xmax],[-nLim, -nLim],'k');
 xl = xlabel('$x$','Interpreter','LaTeX');
-yl = ylabel('$d$','Interpreter','LaTeX');
+yl = ylabel('$n$','Interpreter','LaTeX');
 % ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
 set(pp,'LineWidth',1.25,'MarkerSize',8);
 set(xl,'FontSize',18);
@@ -164,9 +164,9 @@ if savePlotData == true
 end
 
 figure(13)
-pp = plot(t, d,'-o', [t(1),t(end)],[nLim, nLim],'k', [t(1),t(end)],[-nLim, -nLim],'k');
+pp = plot(t, n,'-o', [t(1),t(end)],[nLim, nLim],'k', [t(1),t(end)],[-nLim, -nLim],'k');
 xl = xlabel('$t$','Interpreter','LaTeX');
-yl = ylabel('$d$','Interpreter','LaTeX');
+yl = ylabel('$n$','Interpreter','LaTeX');
 % ll = legend('$x(t)$','$y(t)$','$v(t)$','Location','NorthWest');
 set(pp,'LineWidth',1.25,'MarkerSize',8);
 set(xl,'FontSize',18);
