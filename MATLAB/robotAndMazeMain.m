@@ -8,6 +8,8 @@
 
 clear all; close all; clc
 
+run CreateTrackCurvature.m
+
 Wc = 1; % Maze cell width
 
 m = 5.925;              % Robot mass
@@ -33,8 +35,6 @@ xmin = 0; xmax = 4;
 ymin = 0; ymax = 3;
 omegamin = -20; omegamax = 20; % Angular rate (rad/s) limit
 
-run CreateTrackCurvature.m
-
     pathConstraintsActive = true;
     tfmin = 0; tfmax = 3;                  % time boundary
     % xf = 2.5; yf = 1.3;                    % final state
@@ -46,6 +46,7 @@ run CreateTrackCurvature.m
     % sfmin = 0.5*Wc;
     % sfmax = 1.5*Wc;
 
+    % inputCostFuncWeight = 1;
     % xf = 1.5; yf = 1;                    % final state
     % sfmin = Wc;
     % sfmax = Wc + (pi/4)*Wc;
@@ -58,19 +59,27 @@ run CreateTrackCurvature.m
     % sfmin = s_cell5;
     % sfmax = s_cell7;
 
-    xf = 3.5; yf = 2.5;                    % final state
-    sfmin = s_cell7;
-    sfmax = s_cell8;
-    tfmax = 5;
+    % inputCostFuncWeight = 1;
+    % xf = 3.5; yf = 2.5;                    % final state
+    % sfmin = s_cell7;
+    % sfmax = s_cell8;
+    % tfmax = 5;
+
+    inputCostFuncWeight = 10;
+    xf = 0.5; yf = 2.5;                    % final state
+    sfmin = s_cell10;
+    sfmax = s_cell11;
+    tfmax = 10;
 
     n0 = 0;
     nmin = -(0.5*Wc - rRobot);
     nmax = (0.5*Wc - rRobot);
 
     xi0 = 0;
-    ximin = -0.9*pi/2;
-    ximax = 0.9*pi/2;
+    ximin = -0.7*pi/2;
+    ximax = 0.7*pi/2;
 
+auxdata.inputCostFuncWeight = inputCostFuncWeight;
 auxdata.C_track = C_track;
 auxdata.s_track = s_track;
 
@@ -111,20 +120,21 @@ end
 %---------------------- Provide Guess of Solution ------------------------%
 %-------------------------------------------------------------------------%
 sfave = (sfmax+sfmin)/2;
-sTwoThirds = (2/3)*sfave;
-% guess.phase.time    = [s0; sTwoThirds; sfave]; % The independent variable is s (center line displacement)
 guess.phase.time    = [s0; sfave]; % The independent variable is s (center line displacement)
-
-% guess.phase.state   = [[v0; vmax], [theta0; theta0], [x0; xf], ...
-%     [y0; yf], [omega0; omega0], ...
-%     [n0; n0], [xi0; xi0], [t0; tfmax]];
-
 guess.phase.state   = [...
     v0,     theta0,     x0,     y0,     omega0,     n0,     xi0,    t0
     5,   theta0,     x0,     y0,     omega0,     n0,     xi0,    tfmax];
-
 guess.phase.control = [[Frmax; Frmax],[Flmax; Flmax]];
 guess.phase.integral = tfmax; % guess the final time
+
+% sHalfWay = (s0+sfave)/2; % This is at the end of cell 6 currently
+% guess.phase.time    = [s0; sHalfWay; sfave]; % The independent variable is s (center line displacement)
+% guess.phase.state   = [...
+%     v0,     theta0,     x0,     y0,     omega0,     n0,     xi0,    t0
+%     1,      pi/2,       3.3,    1,      omega0,     n0,     xi0,    (tfmax-t0)/2
+%     1,      pi,         xf,     yf,     omega0,     n0,     xi0,    tfmax];
+% guess.phase.control = [[Frmax; Frmax; Frmax],[Flmax; Flmax; Flmax]];
+% guess.phase.integral = tfmax; % guess the final time
 
 %-------------------------------------------------------------------------%
 %----------Provide Mesh Refinement Method and Initial Mesh ---------------%

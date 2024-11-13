@@ -17,7 +17,7 @@ yDot = v.*sin(theta);
 s = solution.phase(1).time;
 
 C = interp1(s_track, C_track, s, 'pchip');
-vs = (1 - n.*C)./(v.*cos(xi));
+vs = (v.*cos(xi))./(1 - n.*C);
 
 % [n, vs] = centerLineDispAndSpeed(x, y, xDot, yDot, ...
 %     auxdata.Maze, Wc);
