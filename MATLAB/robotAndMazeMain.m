@@ -64,11 +64,17 @@ omegamin = -20; omegamax = 20; % Angular rate (rad/s) limit
     % sfmin = s_cell7;
     % sfmax = s_cell8;
     % tfmax = 5;
+    % 
+    % inputCostFuncWeight = 10;
+    % xf = 0.5; yf = 2.5;                    % final state
+    % sfmin = s_cell10;
+    % sfmax = s_cell11;
+    % tfmax = 10;
 
     inputCostFuncWeight = 10;
-    xf = 0.5; yf = 2.5;                    % final state
-    sfmin = s_cell10;
-    sfmax = s_cell11;
+    xf = 0.5; yf = 1.5;                    % final state
+    sfmin = s_cell11;
+    sfmax = s_cell12;
     tfmax = 10;
 
     n0 = 0;
@@ -120,21 +126,21 @@ end
 %---------------------- Provide Guess of Solution ------------------------%
 %-------------------------------------------------------------------------%
 sfave = (sfmax+sfmin)/2;
-guess.phase.time    = [s0; sfave]; % The independent variable is s (center line displacement)
-guess.phase.state   = [...
-    v0,     theta0,     x0,     y0,     omega0,     n0,     xi0,    t0
-    5,   theta0,     x0,     y0,     omega0,     n0,     xi0,    tfmax];
-guess.phase.control = [[Frmax; Frmax],[Flmax; Flmax]];
-guess.phase.integral = tfmax; % guess the final time
-
-% sHalfWay = (s0+sfave)/2; % This is at the end of cell 6 currently
-% guess.phase.time    = [s0; sHalfWay; sfave]; % The independent variable is s (center line displacement)
+% guess.phase.time    = [s0; sfave]; % The independent variable is s (center line displacement)
 % guess.phase.state   = [...
 %     v0,     theta0,     x0,     y0,     omega0,     n0,     xi0,    t0
-%     1,      pi/2,       3.3,    1,      omega0,     n0,     xi0,    (tfmax-t0)/2
-%     1,      pi,         xf,     yf,     omega0,     n0,     xi0,    tfmax];
-% guess.phase.control = [[Frmax; Frmax; Frmax],[Flmax; Flmax; Flmax]];
+%     5,   theta0,     x0,     y0,     omega0,     n0,     xi0,    tfmax];
+% guess.phase.control = [[Frmax; Frmax],[Flmax; Flmax]];
 % guess.phase.integral = tfmax; % guess the final time
+
+sHalfWay = (s0+sfave)/2; % This is at the end of cell 6 currently
+guess.phase.time    = [s0; sHalfWay; sfave]; % The independent variable is s (center line displacement)
+guess.phase.state   = [...
+    v0,     theta0,     x0,     y0,     omega0,     n0,     xi0,    t0
+    1,      pi/2,       3.3,    1,      omega0,     n0,     xi0,    (tfmax-t0)/2
+    1,      pi,         xf,     yf,     omega0,     n0,     xi0,    tfmax];
+guess.phase.control = [[Frmax; Frmax; Frmax],[Flmax; Flmax; Flmax]];
+guess.phase.integral = tfmax; % guess the final time
 
 %-------------------------------------------------------------------------%
 %----------Provide Mesh Refinement Method and Initial Mesh ---------------%
