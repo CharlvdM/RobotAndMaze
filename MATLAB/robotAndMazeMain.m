@@ -24,7 +24,7 @@ BASIC_MAZE_SIMPLIFIED = 4;
 % discretely between cells.
 CIRCULAR_TRACK = 5;
 
-sim = CIRCULAR_TRACK;
+sim = BASIC_MAZE;
 
 Wc = 1; % Maze cell width
 Maze = ["R", "ANW", "ANE", "ANW";
@@ -100,6 +100,8 @@ switch sim
     case CIRCULAR_TRACK
         pathConstraintsActive = true;
         primeDynamicsUsed = true;
+        % pathConstraintsActive = false;
+        % primeDynamicsUsed = false;
         tfmin = 0; tfmax = 3;                  % time boundary
         Maze = "ASW";
         Wc = 10;
@@ -120,7 +122,8 @@ auxdata.FIRST_SIM = FIRST_SIM;
 auxdata.CIRCULAR_TRACK = CIRCULAR_TRACK;
 auxdata.pathConstraintsActive = pathConstraintsActive;
 auxdata.primeDynamicsUsed = primeDynamicsUsed;
-auxdata.Maze = Maze;
+auxdata.Maze = convertMazeCellType(Maze);
+% auxdata.Maze = Maze;
 % auxdata.MazeOrder = MazeOrder;
 auxdata.Wc = Wc;
 auxdata.m = m;
@@ -206,7 +209,8 @@ end
 mesh.method       = 'hp-LiuRao-Legendre';
 mesh.tolerance    = 1e-6;
 mesh.colpointsmin = 4;
-mesh.colpointsmax = 10;
+% mesh.colpointsmax = 10;
+mesh.colpointsmax = 6;
 mesh.sigma        = 0.75;
 
 % mesh.method       = 'hp-LiuRao-Legendre';
@@ -220,34 +224,34 @@ mesh.maxiterations              = 10;
 %-------------------------------------------------------------------------%
 %------------- Assemble Information into Problem Structure ---------------%        
 %-------------------------------------------------------------------------%
-% setup.name                        = 'RobotAndMaze-Problem';
-% setup.functions.continuous        = @robotAndMazeContinuous;
-% setup.functions.endpoint          = @robotAndMazeEndpoint;
-% setup.auxdata                     = auxdata;
-% setup.bounds                      = bounds;
-% setup.guess                       = guess;
-% setup.mesh                        = mesh; 
-% setup.nlp.solver                  = 'ipopt';
-% setup.derivatives.supplier        = 'sparseCD';
-% setup.derivatives.derivativelevel = 'second';
-% setup.method                      = 'RPM-Differentiation';
+setup.name                        = 'RobotAndMaze-Problem';
+setup.functions.continuous        = @robotAndMazeContinuous;
+setup.functions.endpoint          = @robotAndMazeEndpoint;
+setup.auxdata                     = auxdata;
+setup.bounds                      = bounds;
+setup.guess                       = guess;
+setup.mesh                        = mesh; 
+setup.nlp.solver                  = 'ipopt';
+setup.derivatives.supplier        = 'sparseCD';
+setup.derivatives.derivativelevel = 'second';
+setup.method                      = 'RPM-Differentiation';
 
-setup.name                           = 'RobotAndMaze-Problem';
-setup.functions.continuous           = @robotAndMazeContinuous;
-setup.functions.endpoint             = @robotAndMazeEndpoint;
-setup.displaylevel                   = 2;
-setup.nlp.solver                     = 'ipopt';
-setup.nlp.ipoptoptions.linear_solver = 'ma57';
-setup.bounds                         = bounds;
-setup.guess                          = guess;
-setup.mesh                           = mesh;
-setup.auxdata                        = auxdata;
-setup.derivatives.supplier           = 'sparseCD';
-% setup.derivatives.supplier           = 'adigator';
-setup.derivatives.derivativelevel    = 'second';
-setup.derivatives.dependencies       = 'sparseNaN';
-setup.scales.method                  = 'automatic-bounds';
-setup.method                         = 'RPM-Differentiation';
+% setup.name                           = 'RobotAndMaze-Problem';
+% setup.functions.continuous           = @robotAndMazeContinuous;
+% setup.functions.endpoint             = @robotAndMazeEndpoint;
+% setup.displaylevel                   = 2;
+% setup.nlp.solver                     = 'ipopt';
+% setup.nlp.ipoptoptions.linear_solver = 'ma57';
+% setup.bounds                         = bounds;
+% setup.guess                          = guess;
+% setup.mesh                           = mesh;
+% setup.auxdata                        = auxdata;
+% setup.derivatives.supplier           = 'sparseCD';
+% % setup.derivatives.supplier           = 'adigator';
+% setup.derivatives.derivativelevel    = 'second';
+% setup.derivatives.dependencies       = 'sparseNaN';
+% setup.scales.method                  = 'automatic-bounds';
+% setup.method                         = 'RPM-Differentiation';
 
 % %-------------------------------------------------------------------------%
 % %----------Provide Mesh Refinement Method and Initial Mesh ---------------%

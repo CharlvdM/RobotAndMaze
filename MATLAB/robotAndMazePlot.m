@@ -35,6 +35,8 @@ else
             Maze, MazeOrder, Wc);
     end
 end
+% [n, vs] = centerLineDispAndSpeed(x, y, xDot, yDot, ...
+%     auxdata.Maze, Wc);
 
 % figure(25)
 % plot(t, vs);
