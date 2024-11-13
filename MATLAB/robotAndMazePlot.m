@@ -7,34 +7,18 @@ theta = solution.phase(1).state(:,2);
 x = solution.phase(1).state(:,3);
 y = solution.phase(1).state(:,4);
 omega = solution.phase(1).state(:,5);
-Fr = solution.phase(1).state(:,6);
-Fl = solution.phase(1).state(:,7);
-FrDot = solution.phase(1).control(:,1);
-FlDot = solution.phase(1).control(:,1);
+n = solution.phase(1).state(:,6);
+xi = solution.phase(1).state(:,7);
+t = solution.phase(1).state(:,8);
+Fr = solution.phase(1).control(:,1);
+Fl = solution.phase(1).control(:,1);
 xDot = v.*cos(theta);
 yDot = v.*sin(theta);
-if primeDynamicsUsed
-    s = solution.phase(1).time;
-    t = solution.phase(1).state(:,8);
-    N = size(x,1);
-    n = zeros(N,1);
-    % s = zeros(N,1);
-    vs = zeros(N,1);
-    for i = 1:N
-        [n(i), ~, vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), ...
-            Maze, MazeOrder, Wc);
-    end
-else
-    t = solution.phase(1).time;
-    N = size(x,1);
-    n = zeros(N,1);
-    s = zeros(N,1);
-    vs = zeros(N,1);
-    for i = 1:N
-        [n(i), s(i), vs(i)] = centerLineDispNew(x(i), y(i), xDot(i), yDot(i), ...
-            Maze, MazeOrder, Wc);
-    end
-end
+s = solution.phase(1).time;
+
+C = interp1(s_track, C_track, s, 'pchip');
+vs = (1 - n.*C)./(v.*cos(xi));
+
 % [n, vs] = centerLineDispAndSpeed(x, y, xDot, yDot, ...
 %     auxdata.Maze, Wc);
 

@@ -10,25 +10,36 @@ s_track = linspace(0, mazeTrackLength, n);
 % Initialize C array
 C_track = zeros(size(s_track));
 
+s_cell1 = Wc;
+s_cell2 = Wc + (pi/4)*Wc;
+s_cell4 = Wc + 3*(pi/4)*Wc;
+s_cell5 = Wc + 4*(pi/4)*Wc;
+s_cell6 = Wc + 5*(pi/4)* Wc;
+s_cell7 = 2*Wc + 5*(pi/4)*Wc;
+s_cell8 = 2*Wc + 6*(pi/4)* Wc;
+s_cell10 = 4*Wc + 6*(pi/4)*Wc;
+s_cell11 = 4*Wc + 8*(pi/4)*Wc;
+s_cell12 = 4*Wc + 8*(pi/4)*Wc;
+
 % Calculate C as a function of s
 for i = 1:n
-    if s_track(i) < Wc % Cell 1
+    if s_track(i) < s_cell1 % Cell 1
         C_track(i) = 0;
-    elseif s_track(i) < Wc + (pi / 4) * Wc % Cell 2
+    elseif s_track(i) < s_cell2 % Cell 2
         C_track(i) = 1 / r;
-    elseif s_track(i) < Wc + 3 * (pi / 4) * Wc % Cell 3 & 4
+    elseif s_track(i) < s_cell4 % Cell 3 & 4
         C_track(i) = -1 / r;
-    elseif s_track(i) < Wc + 5 * (pi / 4) * Wc % Cell 5 & 6
+    elseif s_track(i) < s_cell6 % Cell 5 & 6
         C_track(i) = 1 / r;
-    elseif s_track(i) < 2 * Wc + 5 * (pi / 4) * Wc % Cell 7
+    elseif s_track(i) < s_cell7 % Cell 7
         C_track(i) = 0;
-    elseif s_track(i) < 2 * Wc + 6 * (pi / 4) * Wc % Cell 8
+    elseif s_track(i) < s_cell8 % Cell 8
         C_track(i) = -1 / r;
-    elseif s_track(i) < 4 * Wc + 6 * (pi / 4) * Wc % Cell 9 & 10
+    elseif s_track(i) < s_cell10 % Cell 9 & 10
         C_track(i) = 0;
-    elseif s_track(i) < 4 * Wc + 7 * (pi / 4) * Wc % Cell 11
+    elseif s_track(i) < s_cell11 % Cell 11
         C_track(i) = -1 / r;
-    elseif s_track(i) < 4 * Wc + 8 * (pi / 4) * Wc % Cell 12
+    elseif s_track(i) < s_cell12 % Cell 12
         C_track(i) = 1 / r;
     else
         C_track(i) = 0;
