@@ -46,9 +46,9 @@ run CreateTrackCurvature.m
     % sfmin = 0.5*Wc;
     % sfmax = 1.5*Wc;
 
-    xf = 1.5; yf = 1;                    % final state
-    sfmin = Wc;
-    sfmax = Wc + (pi/4)*Wc;
+    % xf = 1.5; yf = 1;                    % final state
+    % sfmin = Wc;
+    % sfmax = Wc + (pi/4)*Wc;
 
     % xf = 2.5; yf = 1;                    % final state
     % sfmin = Wc + 2*(pi/4)*Wc;
@@ -58,18 +58,18 @@ run CreateTrackCurvature.m
     % sfmin = s_cell5;
     % sfmax = s_cell7;
 
-    % xf = 3.5; yf = 2.5;                    % final state
-    % sfmin = s_cell7;
-    % sfmax = s_cell8;
-    % tfmax = 5;
+    xf = 3.5; yf = 2.5;                    % final state
+    sfmin = s_cell7;
+    sfmax = s_cell8;
+    tfmax = 5;
 
     n0 = 0;
     nmin = -(0.5*Wc - rRobot);
     nmax = (0.5*Wc - rRobot);
 
     xi0 = 0;
-    ximin = -1.1*pi/2;
-    ximax = 1.1*pi/2;
+    ximin = -0.9*pi/2;
+    ximax = 0.9*pi/2;
 
 auxdata.C_track = C_track;
 auxdata.s_track = s_track;
@@ -121,7 +121,7 @@ guess.phase.time    = [s0; sfave]; % The independent variable is s (center line 
 
 guess.phase.state   = [...
     v0,     theta0,     x0,     y0,     omega0,     n0,     xi0,    t0
-    vmax,   theta0,     x0,     y0,     omega0,     n0,     xi0,    tfmax];
+    5,   theta0,     x0,     y0,     omega0,     n0,     xi0,    tfmax];
 
 guess.phase.control = [[Frmax; Frmax],[Flmax; Flmax]];
 guess.phase.integral = tfmax; % guess the final time

@@ -41,7 +41,7 @@ xi_prime = Sf.*omega - C;
 t_prime = Sf;
 
 phaseout.dynamics = [x_prime, n_prime, xi_prime, t_prime];
-inputWeight = 0.01;
+inputWeight = 1;
 phaseout.integrand = Sf + inputWeight*Fr.^2 + inputWeight*Fl.^2;
 
 phaseout.path = n;
