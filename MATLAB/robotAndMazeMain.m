@@ -71,7 +71,9 @@ omegamin = -20; omegamax = 20; % Angular rate (rad/s) limit
     % sfmax = s_cell11;
     % tfmax = 10;
 
-    inputCostFuncWeight = 10;
+    % inputCostFuncWeight = 0.01;
+    % inputCostFuncWeight = 0.0001; % Works
+    inputCostFuncWeight = 10^(-6);
     xf = 0.5; yf = 1.5;                    % final state
     sfmin = s_cell11;
     sfmax = s_cell12;
