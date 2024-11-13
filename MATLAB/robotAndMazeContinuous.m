@@ -6,53 +6,46 @@ function phaseout = robotAndMazeContinuous(input)
 I                 = input.auxdata.I;
 m                 = input.auxdata.m;
 w                 = input.auxdata.w;
+C_track           = input.auxdata.C_track;
+s_track           = input.auxdata.s_track;
 
-v                 = input.phase.state(:,1);
-theta             = input.phase.state(:,2);
+s                 = input.phase.time;
+
+u                 = input.phase.state(:,1);
+psi               = input.phase.state(:,2);
 x                 = input.phase.state(:,3);
 y                 = input.phase.state(:,4);
 omega             = input.phase.state(:,5);
 Fr                = input.phase.state(:,6);
 Fl                = input.phase.state(:,7);
+
 FrDot             = input.phase.control(:,1);
 FlDot             = input.phase.control(:,2);
-vDot              = (1/m)*(Fr+Fl);
-thetaDot          = omega;
-xDot              = v.*cos(theta);
-yDot              = v.*sin(theta);
+uDot              = (1/m)*(Fr+Fl);
+psiDot            = omega;
+xDot              = u.*cos(psi);
+yDot              = u.*sin(psi);
 omegaDot          = (1/I)*w*(Fr-Fl);
 
-sim = input.auxdata.sim;
-FIRST_SIM = input.auxdata.FIRST_SIM;
-CIRCULAR_TRACK = input.auxdata.CIRCULAR_TRACK;
-Wc = input.auxdata.Wc;
+n                 = input.phase.state(:,8);
+xi                = input.phase.state(:,9);
 
-if (sim ~= FIRST_SIM) %&& (sim ~= CIRCULAR_TRACK)
-    [n, vs] = centerLineDispAndSpeed(x, y, xDot, yDot, ...
-        input.auxdata.Maze, input.auxdata.Wc);
-    % for i = 1:N
-    %     [n(i), vs(i)] = centerLineDispAndSpeed(x(i), y(i), xDot(i), yDot(i), ...
-    %         input.auxdata.Maze, input.auxdata.Wc);
-    % end
-% elseif (sim == CIRCULAR_TRACK)
-%     re = sqrt(x.^2 + y.^2);
-%     n = re - 0.5*Wc;
-%     vs = (0.5*Wc).*(x.*yDot - y.*xDot)./(x.^2+y.^2);
-end
+C = interp1(s_track, C_track, s, 'pchip');
 
-if input.auxdata.primeDynamicsUsed
-    x_prime = (1./vs).*[vDot, thetaDot, xDot, yDot, omegaDot, FrDot, FlDot];
-    t_prime = (1./vs);
-    
-    phaseout.dynamics = [x_prime, t_prime];
-    phaseout.integrand = (1./vs);
-else
-    phaseout.dynamics = [vDot, thetaDot, xDot, yDot, omegaDot, FrDot, FlDot];
-end
+Sf = (1 - n.*C)./(u.*cos(xi));
 
-if input.auxdata.pathConstraintsActive
-    phaseout.path = n;
-end
+nDot = u.*sin(xi);
+
+% x_prime = Sf.*[uDot, psiDot, xDot, yDot, omegaDot, FrDot, FlDot];
+x_prime = [Sf.*uDot, Sf.*psiDot, Sf.*xDot, Sf.*yDot, Sf.*omegaDot, Sf.*FrDot, Sf.*FlDot];
+n_prime = Sf.*nDot;
+xi_prime = Sf.*omega - C;
+t_prime = Sf;
+
+phaseout.dynamics = [x_prime, n_prime, xi_prime, t_prime];
+phaseout.integrand = Sf;
+
+phaseout.path = n;
 
 %---------------------------------------------%
 % END: function brachistochroneContinuous.m   %

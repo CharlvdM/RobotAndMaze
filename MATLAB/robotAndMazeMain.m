@@ -24,7 +24,7 @@ BASIC_MAZE_SIMPLIFIED = 4;
 % discretely between cells.
 CIRCULAR_TRACK = 5;
 
-sim = BASIC_MAZE;
+sim = BASIC_MAZE_PRIME;
 
 Wc = 1; % Maze cell width
 Maze = ["R", "ANW", "ANE", "ANW";
@@ -49,8 +49,8 @@ FrDotMax = F_DotMax;
 FlDotMax = F_DotMax;
 
 t0 = 0;                                             % initial time
-v0 = 0; theta0 = 0; x0 = 0.5; y0 = 0.5; omega0 = 0; % initial state
-vmin = 0; vmax = 16.5;
+v0 = 0.5; theta0 = 0; x0 = 0.5; y0 = 0.5; omega0 = 0; % initial state
+vmin = 0.5; vmax = 16.5;
 thetamin = -2*pi; thetamax = 2*pi;
 thetafmin = thetamin; thetafmax = thetamax;
 xmin = 0; xmax = 4;
@@ -85,10 +85,19 @@ switch sim
         primeDynamicsUsed = true;
         tfmin = 0; tfmax = 3;                  % time boundary
         xf = 2.5; yf = 1.3;                    % final state
+
+        n0 = 0;
+        nmin = -(0.5*Wc - rRobot);
+        nmax = (0.5*Wc - rRobot);
+
+        xi0 = 0;
+        ximin = -1.1*pi/2;
+        ximax = 1.1*pi/2;
+
         % Initial and final center line displacement
-        s0 = 0;
-        sfmin = 2;
-        sfmax = 3.5;
+        s0 = 0.5*Wc;
+        sfmin = Wc + 5 * (pi / 4) * Wc;
+        sfmax = 2 * Wc + 5 * (pi / 4) * Wc;
     case BASIC_MAZE_SIMPLIFIED
         pathConstraintsActive = true;
         primeDynamicsUsed = false;
@@ -117,6 +126,10 @@ switch sim
     otherwise
 end
 
+run CreateTrackCurvature.m
+auxdata.C_track = C_track;
+auxdata.s_track = s_track;
+
 auxdata.sim = sim;
 auxdata.FIRST_SIM = FIRST_SIM;
 auxdata.CIRCULAR_TRACK = CIRCULAR_TRACK;
@@ -138,12 +151,12 @@ if primeDynamicsUsed
     bounds.phase.initialtime.upper = s0;
     bounds.phase.finaltime.lower = sfmin; 
     bounds.phase.finaltime.upper = sfmax;
-    bounds.phase.initialstate.lower = [v0,theta0,x0,y0,omega0,Frmin,Flmin,t0]; 
-    bounds.phase.initialstate.upper = [v0,theta0,x0,y0,omega0,Frmax,Flmax,t0]; 
-    bounds.phase.state.lower = [vmin,thetamin,xmin,ymin,omegamin,Frmin,Flmin,t0]; 
-    bounds.phase.state.upper = [vmax,thetamax,xmax,ymax,omegamax,Frmax,Flmax,tfmax]; 
-    bounds.phase.finalstate.lower = [vmin,thetafmin,xf,yf,omegamin,Frmin,Flmin,tfmin]; 
-    bounds.phase.finalstate.upper = [vmax,thetafmax,xf,yf,omegamax,Frmax,Flmax,tfmax]; 
+    bounds.phase.initialstate.lower = [v0,theta0,x0,y0,omega0,Frmin,Flmin,n0,xi0,t0]; 
+    bounds.phase.initialstate.upper = [v0,theta0,x0,y0,omega0,Frmax,Flmax,n0,xi0,t0]; 
+    bounds.phase.state.lower = [vmin,thetamin,xmin,ymin,omegamin,Frmin,Flmin,nmin,ximin,t0]; 
+    bounds.phase.state.upper = [vmax,thetamax,xmax,ymax,omegamax,Frmax,Flmax,nmax,ximax,tfmax]; 
+    bounds.phase.finalstate.lower = [vmin,thetafmin,xf,yf,omegamin,Frmin,Flmin,nmin,ximin,tfmin]; 
+    bounds.phase.finalstate.upper = [vmax,thetafmax,xf,yf,omegamax,Frmax,Flmax,nmax,ximax,tfmax]; 
     bounds.phase.control.lower = [-FrDotMax, -FlDotMax]; 
     bounds.phase.control.upper = [FrDotMax, FrDotMax];
     % The result of the integral is time
@@ -179,7 +192,8 @@ end
 if primeDynamicsUsed
     guess.phase.time    = [s0; sfmax]; % The independent variable is now s (center line displacement)
     guess.phase.state   = [[v0; vmax], [theta0; theta0], [x0; xf], ...
-        [y0; yf], [omega0; omega0], [Frmax; Frmax], [Flmax; Flmax], [t0; tfmax]];
+        [y0; yf], [omega0; omega0], [Frmax; Frmax], [Flmax; Flmax], ...
+        [n0; n0], [xi0; xi0], [t0; tfmax]];
     guess.phase.control = [[0; 0],[0; 0]];
     guess.phase.integral = tfmax; % guess the final time
 else
@@ -232,9 +246,11 @@ setup.bounds                      = bounds;
 setup.guess                       = guess;
 setup.mesh                        = mesh; 
 setup.nlp.solver                  = 'ipopt';
-setup.derivatives.supplier        = 'sparseCD';
+% setup.derivatives.supplier        = 'sparseCD';
+setup.derivatives.supplier           = 'adigator';
 setup.derivatives.derivativelevel = 'second';
 setup.method                      = 'RPM-Differentiation';
+setup.scales.method                  = 'automatic-bounds';
 
 % setup.name                           = 'RobotAndMaze-Problem';
 % setup.functions.continuous           = @robotAndMazeContinuous;
